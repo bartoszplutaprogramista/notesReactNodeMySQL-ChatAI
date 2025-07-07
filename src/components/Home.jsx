@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import ChatbotIcon from "./ChatbotIcon";
+import ChatForm from "./ChatForm";
+import ChatMessage from "./ChatMessage";
+import ChatBotAIBody from "./ChatBotAIBody";
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Link } from "react-router";
 import Note from "./Note";
@@ -11,6 +15,47 @@ export default function Home() {
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [dataAll, setData] = useState([]);
+
+    //ChatBotAi
+    // const [chatHistory, setChatHistory] = useState([]);
+    // const [showChatBot, setShowChatBot] = useState(false);
+    // const chatBodyRef = useRef();
+
+    // const generateBotResponse = async (history) => {
+    //     //Helper function to update chat history
+    //     const updateHistory = (text, isError = false) => {
+    //         setChatHistory(prev => [...prev.filter(msg => msg.text !== "Thinking..."), { role: "model", text, isError }]);
+    //     }
+
+    //     //Format chat history for API request
+    //     history = history.map(({ role, text }) => ({ role, parts: [{ text }] }));
+
+    //     const requestOptions = {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify({ contents: history })
+    //     };
+
+    //     try {
+    //         // Make the API call to get the bot's response
+    //         const response = await fetch(import.meta.env.VITE_API_URL, requestOptions);
+    //         const data = await response.json();
+    //         if (!response.ok) throw new Error(data.error.message || "Something went wrong!");
+
+    //         //Clean and update chat history with bot's response
+    //         const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+    //         updateHistory(apiResponseText);
+    //     } catch (error) {
+    //         updateHistory(error.message, true);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     //Auto scroll whenever chat history updates
+    //     chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: "smooth" });
+    // }, [chatHistory]);
+
+    //EndChatBotAI
 
     axios.defaults.withCredentials = true;
     useEffect(() => {
@@ -64,6 +109,7 @@ export default function Home() {
                                 <button className='btn btn-danger ms-2 mb-2' onClick={handleLogout}>Wyloguj się</button>
                             </div>
                             <Header />
+                            <ChatBotAIBody />
                             <CreateArea onAdd={fetchData} />
                             <Note data={dataAll} fetchData={fetchData} />
                         </div>
