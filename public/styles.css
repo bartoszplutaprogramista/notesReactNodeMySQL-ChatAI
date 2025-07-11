@@ -195,12 +195,30 @@ form.create-note button {
   .home-page {
     width: 100%;
   }
-}
+  /* form.create-note {
+    width: 100%;
+  } */
+} 
 
-@media (max-width: 280px)
+@media (max-width: 800px)
 {
     form.create-note {
     width: 100%;
+  }
+  /* .home-page {
+    width: 100%;
+  } */
+}
+
+@media (max-width: 270px) {
+  form.create-note,
+  .general-note-my,
+  .note {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* padding: 8px;
+    margin: 4px; */
   }
 }
 
