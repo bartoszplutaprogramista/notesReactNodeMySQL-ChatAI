@@ -16,47 +16,6 @@ export default function Home() {
     const [message, setMessage] = useState('');
     const [dataAll, setData] = useState([]);
 
-    //ChatBotAi
-    // const [chatHistory, setChatHistory] = useState([]);
-    // const [showChatBot, setShowChatBot] = useState(false);
-    // const chatBodyRef = useRef();
-
-    // const generateBotResponse = async (history) => {
-    //     //Helper function to update chat history
-    //     const updateHistory = (text, isError = false) => {
-    //         setChatHistory(prev => [...prev.filter(msg => msg.text !== "Thinking..."), { role: "model", text, isError }]);
-    //     }
-
-    //     //Format chat history for API request
-    //     history = history.map(({ role, text }) => ({ role, parts: [{ text }] }));
-
-    //     const requestOptions = {
-    //         method: "POST",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify({ contents: history })
-    //     };
-
-    //     try {
-    //         // Make the API call to get the bot's response
-    //         const response = await fetch(import.meta.env.VITE_API_URL, requestOptions);
-    //         const data = await response.json();
-    //         if (!response.ok) throw new Error(data.error.message || "Something went wrong!");
-
-    //         //Clean and update chat history with bot's response
-    //         const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
-    //         updateHistory(apiResponseText);
-    //     } catch (error) {
-    //         updateHistory(error.message, true);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     //Auto scroll whenever chat history updates
-    //     chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: "smooth" });
-    // }, [chatHistory]);
-
-    //EndChatBotAI
-
     axios.defaults.withCredentials = true;
     useEffect(() => {
         axios.get('http://localhost:8081')
@@ -118,7 +77,7 @@ export default function Home() {
                     :
                     <div className="d-flex align-items-center justify-content-center mt-5 flex-column">
                         <div className="home-page">
-                            <h3>Aplikacja "Notatki" pozwala na dodawanie nowych notatek ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanej notatce) na zorientowanie się kiedy notatka została dodana  lub i czy wogóle była edytowana.</h3>
+                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
                         </div>
                         <h3 className="mt-4">Zaloguj się lub zarejestruj się teraz</h3>
                         <Link to="/login" className='btn btn-primary ms-3'>Zaloguj się/Zarejestruj się</Link>
