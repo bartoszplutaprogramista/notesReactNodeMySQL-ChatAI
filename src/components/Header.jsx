@@ -6,7 +6,7 @@ function Header() {
     <header>
       <h1>
         <HighlightIcon />
-        Notatki
+        Pamiętnik + Coach AI
       </h1>
     </header>
   );
