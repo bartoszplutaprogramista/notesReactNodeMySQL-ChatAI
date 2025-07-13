@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import ChatbotIcon from "./ChatbotIcon";
+import ChatForm from "./ChatForm";
+import ChatMessage from "./ChatMessage";
+import ChatBotAIBody from "./ChatBotAIBody";
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Link } from "react-router";
 import Note from "./Note";
@@ -64,6 +68,7 @@ export default function Home() {
                                 <button className='btn btn-danger ms-2 mb-2' onClick={handleLogout}>Wyloguj się</button>
                             </div>
                             <Header />
+                            <ChatBotAIBody />
                             <CreateArea onAdd={fetchData} />
                             <Note data={dataAll} fetchData={fetchData} />
                         </div>
@@ -72,7 +77,7 @@ export default function Home() {
                     :
                     <div className="d-flex align-items-center justify-content-center mt-5 flex-column">
                         <div className="home-page">
-                            <h3>Aplikacja "Notatki" pozwala na dodawanie nowych notatek ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanej notatce) na zorientowanie się kiedy notatka została dodana  lub i czy wogóle była edytowana.</h3>
+                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
                         </div>
                         <h3 className="mt-4">Zaloguj się lub zarejestruj się teraz</h3>
                         <Link to="/login" className='btn btn-primary ms-3'>Zaloguj się/Zarejestruj się</Link>
