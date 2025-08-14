@@ -41,6 +41,7 @@ function Note({ data, fetchData }) {
     axios.post('http://localhost:8081/deletenote', { id })
       .then(res => {
         if (res.data.Status === "Success") {
+          console.warn(res.data.data.message);
           fetchData();
         } else {
           alert("Nie usunięto");

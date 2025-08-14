@@ -24,11 +24,13 @@ function CreateArea({ onAdd }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('http://localhost:8081/savetodatabase', note, {
+      withCredentials: true,
       maxContentLength: Infinity,
       maxBodyLength: Infinity
     })
       .then(res => {
         if (res.data.Status === "Success") {
+          console.warn("Info z backendu:", res.data.data.message);
           onAdd();
           setNote({
             title: "",

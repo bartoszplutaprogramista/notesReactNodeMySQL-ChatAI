@@ -46,7 +46,15 @@ export default function Home() {
     const fetchData = () => {
         axios.get('http://localhost:8081/getAllNotes')
             .then(response => {
-                setData(response.data);
+                // setData(response.data.data);
+                if (response.data.success && response.data.data) {
+                    setData(response.data.data);
+                } else if (response.data.Message) {
+                    console.warn("Info z backendu:", response.data.Message);
+                    // Możesz też ustawić pustą tablicę lub komunikat dla użytkownika
+                    setData([]);
+                }
+
             })
             .catch(error => {
                 console.error('Error fetching data:', error);

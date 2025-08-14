@@ -40,7 +40,13 @@ export default function Registration() {
                 setEmailStatus("Email zajęty.");
             }
         } catch (error) {
-            setEmailStatus("Błąd podczas sprawdzania emaila.");
+            if (error.response && error.response.data && error.response.data.Message) {
+                setEmailStatus(error.response.data.Message); // "Błąd serwera."
+            } else {
+                setEmailStatus("Nieznany błąd.");
+            }
+
+            // setEmailStatus("Błąd podczas sprawdzania emaila.");
         }
     };
 

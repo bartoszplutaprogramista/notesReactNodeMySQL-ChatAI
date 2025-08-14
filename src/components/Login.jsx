@@ -18,6 +18,7 @@ export default function Login() {
         axios.post('http://localhost:8081/login', values)
             .then(res => {
                 if (res.data.Status === "Success") {
+                    console.warn(res.data.data.message);
                     navigate('/');
                 } else {
                     alert("Nie ma nikogo w bazie", res.data.Massage)
