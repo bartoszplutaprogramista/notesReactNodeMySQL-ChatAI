@@ -15,6 +15,8 @@ export default function Home() {
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [dataAll, setData] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
     axios.defaults.withCredentials = true;
     useEffect(() => {
@@ -44,7 +46,7 @@ export default function Home() {
     }
 
     const fetchData = () => {
-        axios.get('http://localhost:8081/getAllNotes')
+        axios.get('http://localhost:8081/getAllNotes', { withCredentials: true })
             .then(response => {
                 // setData(response.data.data);
                 if (response.data.success && response.data.data) {
@@ -61,9 +63,26 @@ export default function Home() {
             });
     };
 
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
+
     useEffect(() => {
-        fetchData();
+        axios.get('http://localhost:8081/check-session', { withCredentials: true })
+            .then(res => {
+                if (res.data.isLoggedIn) {
+                    setIsLoggedIn(true);
+                    fetchData(); // dopiero teraz pobieramy notatki
+                } else {
+                    setIsLoggedIn(false);
+                    setData([]); // lub pokaż komunikat
+                }
+            })
+            .catch(err => {
+                console.error("Błąd sprawdzania sesji:", err);
+            });
     }, []);
+
 
     return (
         <div className='mt-4'>
