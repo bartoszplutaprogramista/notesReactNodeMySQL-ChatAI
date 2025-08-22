@@ -131,13 +131,13 @@ const verifyUser = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
         return res.json({
-            Message: "Potrzebny jest token, proszę go dostarczć logując się teraz"
+            Message: "We need token please provide it login now"
         })
     } else {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
             if (err) {
                 return res.json({
-                    Message: "Błąd uwierzytelnienia"
+                    Message: "Authentication Error"
                 })
             } else {
                 req.name = decoded.name;
@@ -213,7 +213,7 @@ app.get('/', verifyUser, (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
@@ -233,7 +233,7 @@ app.get('/', verifyUser, (req, res) => {
 
 //     db.query(sql, [req.body.email, req.body.password], (err, data) => {
 //         if (err) return res.json({
-//             Massage: "Błąd po stronie serwera"
+//             Massage: "Server Side Error"
 //         });
 //         if (data.length > 0) {
 //             const name = data[0].name;
@@ -260,7 +260,7 @@ app.get('/', verifyUser, (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -268,7 +268,7 @@ app.get('/', verifyUser, (req, res) => {
 
 //     db.query(sql, [req.body.email], async (err, data) => {
 //         if (err) return res.status(500).json({
-//             Message: "Błąd po stronie serwera"
+//             Message: "Server Side Error"
 //         });
 
 //         if (data.length > 0) {
@@ -290,12 +290,12 @@ app.get('/', verifyUser, (req, res) => {
 //                 //     Status: "Success"
 //                 // });
 //                 return sendSuccess(res, {
-//                     message: "Operacja zakończona sukcesem"
+//                     message: "The operation was successful"
 //                 });
 //             }
 //         }
 //         return res.json({
-//             Message: "Niewłaściwe dane"
+//             Message: "Incorrect data"
 //         });
 //     });
 // });
@@ -304,7 +304,7 @@ app.post('/login', validateLogin, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
@@ -334,19 +334,24 @@ app.post('/login', validateLogin, async (req, res) => {
                 console.log('USER_ID WYNOSI: ', user_id);
 
                 return sendSuccess(res, {
-                    message: "Operacja zakończona sukcesem"
+                    Message: "The operation was successful"
                 });
             }
         }
-
-        return res.status(401).json({
-            Message: "Niewłaściwe dane"
+        return sendError(res, 401, {
+            message: "Incorrect data"
         });
+        // return res.json({
+        //     success: false,
+        //     Status: "Failure",
+        //     Message: "Nie ma nikogo w bazie"
+        // });
+
 
     } catch (err) {
-        console.error('Błąd logowania:', err);
+        console.error('Login error:', err);
         return res.status(500).json({
-            Message: "Błąd po stronie serwera"
+            Message: "Server Side Error"
         });
     }
 });
@@ -357,7 +362,7 @@ app.post('/login', validateLogin, async (req, res) => {
 //     const sql = 'INSERT INTO users (name, email, password) VALUES (?,?,?)';
 //     db.query(sql, [req.body.name, req.body.email, req.body.password], (err, data) => {
 //         if (err) return res.json({
-//             Massage: "Błąd po stronie serwera"
+//             Massage: "Server Side Error"
 //         })
 //         else {
 //             return res.json({
@@ -372,7 +377,7 @@ app.post('/login', validateLogin, async (req, res) => {
 //         const errors = validationResult(req);
 //         if (!errors.isEmpty()) {
 //             return res.status(400).json({
-//                 Message: "Niewłaściwe dane wejściowe",
+//                 Message: "Invalid input data",
 //                 errors: errors.array()
 //             });
 //         }
@@ -380,23 +385,23 @@ app.post('/login', validateLogin, async (req, res) => {
 //         const sql = 'INSERT INTO users (name, email, password) VALUES (?,?,?)';
 //         db.query(sql, [req.body.name, req.body.email, hashedPassword], (err, data) => {
 //             // if (err) return res.status(500).json({
-//             //     Message: "Błąd po stronie serwera"
+//             //     Message: "Server Side Error"
 //             // });
 //             // return res.json({
 //             //     Status: "Success"
 //             // });
 //             if (err) return sendError(res, 500, {
-//                 message: "Błąd po stronie serwera"
+//                 message: "Server Side Error"
 //             });
 //             else {
 //                 return sendSuccess(res, {
-//                     message: "Operacja zakończona sukcesem"
+//                     message: "The operation was successful"
 //                 });
 //             }
 //         });
 //     } catch (error) {
 //         return res.status(500).json({
-//             Message: "Błąd po stronie serwera"
+//             Message: "Server Side Error"
 //         });
 //     }
 // });
@@ -405,7 +410,7 @@ app.post('/registration', validateRegistration, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
@@ -421,17 +426,17 @@ app.post('/registration', validateRegistration, async (req, res) => {
 
         if (result.affectedRows > 0) {
             return sendSuccess(res, {
-                message: "Operacja zakończona sukcesem"
+                message: "The operation was successful"
             });
         } else {
             return res.status(500).json({
-                Message: "Nie udało się zarejestrować użytkownika"
+                Message: "Failed to register user"
             });
         }
     } catch (error) {
-        console.error("Błąd rejestracji:", error);
+        console.error("Registration Error:", error);
         return sendError(res, 500, {
-            message: "Błąd po stronie serwera"
+            message: "Server Side Error"
         });
     }
 });
@@ -448,7 +453,7 @@ app.post('/registration', validateRegistration, async (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -468,7 +473,7 @@ app.post('/registration', validateRegistration, async (req, res) => {
 //     const sql = 'INSERT INTO notes (user_id, title, note, date) VALUES (?, ?, ?, ?)';
 //     db.query(sql, [user_id, req.body.title, req.body.content, currentDate], (err, data) => {
 //         // if (err) return res.json({
-//         //     Massage: "Błąd po stronie serwera"
+//         //     Massage: "Server Side Error"
 //         // })
 //         // else {
 //         //     return res.json({
@@ -476,11 +481,11 @@ app.post('/registration', validateRegistration, async (req, res) => {
 //         //     })
 //         // }
 //         if (err) return sendError(res, 500, {
-//             message: "Błąd po stronie serwera"
+//             message: "Server Side Error"
 //         });
 //         else {
 //             return sendSuccess(res, {
-//                 message: "Operacja zakończona sukcesem"
+//                 message: "The operation was successful"
 //             });
 //         }
 //     })
@@ -492,14 +497,14 @@ app.post('/savetodatabase', validateNote, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
 
     if (!req.session.user_id) {
         return res.status(401).json({
-            Message: "Użytkownik nie jest zalogowany"
+            Message: "User is not logged in"
         });
     }
 
@@ -518,17 +523,17 @@ app.post('/savetodatabase', validateNote, async (req, res) => {
 
         if (result.affectedRows > 0) {
             return sendSuccess(res, {
-                message: "Operacja zakończona sukcesem"
+                message: "The operation was successful"
             });
         } else {
             return res.status(500).json({
-                Message: "Nie udało się zapisać notatki"
+                Message: "Failed to save note"
             });
         }
     } catch (err) {
-        console.error("Błąd zapisu notatki:", err);
+        console.error("Note saving error:", err);
         return sendError(res, 500, {
-            message: "Błąd po stronie serwera"
+            message: "Server Side Error"
         });
     }
 });
@@ -539,7 +544,7 @@ app.post('/savetodatabase', validateNote, async (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -555,15 +560,15 @@ app.post('/savetodatabase', validateNote, async (req, res) => {
 //     const sql = 'DELETE FROM notes WHERE id = ?';
 //     db.query(sql, [note_id], (err, data) => {
 //         if (err) return sendError(res, 500, {
-//             message: "Błąd po stronie serwera"
+//             message: "Server Side Error"
 //         });
 //         else {
 //             return sendSuccess(res, {
-//                 message: "Operacja zakończona sukcesem"
+//                 message: "The operation was successful"
 //             });
 //         }
 //         // if (err) return res.json({
-//         //     Massage: "Błąd po stronie serwera"
+//         //     Massage: "Server Side Error"
 //         // })
 //         // else {
 //         //     return res.json({
@@ -577,14 +582,14 @@ app.post('/deletenote', async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
 
     if (!req.session.user_id) {
         return res.status(401).json({
-            Message: "Użytkownik nie jest zalogowany"
+            Message: "User is not logged in"
         });
     }
 
@@ -596,17 +601,17 @@ app.post('/deletenote', async (req, res) => {
 
         if (result.affectedRows > 0) {
             return sendSuccess(res, {
-                message: "Operacja zakończona sukcesem"
+                message: "The operation was successful"
             });
         } else {
             return res.status(404).json({
-                Message: "Nie znaleziono notatki do usunięcia"
+                Message: "No note found to delete"
             });
         }
     } catch (err) {
-        console.error("Błąd usuwania notatki:", err);
+        console.error("Error deleting note:", err);
         return sendError(res, 500, {
-            message: "Błąd po stronie serwera"
+            message: "Server Side Error"
         });
     }
 });
@@ -616,7 +621,7 @@ app.get('/logout', (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
@@ -632,7 +637,7 @@ app.get('/logout', (req, res) => {
     //     Status: "Success"
     // })
     return sendSuccess(res, {
-        message: "Operacja zakończona sukcesem"
+        message: "The operation was successful"
     });
 })
 
@@ -645,7 +650,7 @@ app.get('/logout', (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -662,10 +667,10 @@ app.get('/logout', (req, res) => {
 
 //     db.query(sql, [user_id], (err, data) => {
 //         if (err) return sendError(res, 500, {
-//             message: "Błąd po stronie serwera"
+//             message: "Server Side Error"
 //         });
 //         // if (err) return res.json({
-//         //     Massage: "Błąd po stronie serwera"
+//         //     Massage: "Server Side Error"
 //         // })
 //         if ((data.length > 0) && (user_id > 0)) {
 //             // res.json(data);
@@ -686,14 +691,14 @@ app.get('/getAllNotes', async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
 
     if (!req.session.user_id) {
         return res.status(401).json({
-            Message: "Użytkownik nie jest zalogowany"
+            Message: "User is not logged in"
         });
     }
 
@@ -720,9 +725,9 @@ app.get('/getAllNotes', async (req, res) => {
         }
 
     } catch (err) {
-        console.error('Błąd pobierania notatek:', err);
+        console.error('Error downloading notes:', err);
         return sendError(res, 500, {
-            message: "Błąd po stronie serwera"
+            message: "Server Side Error"
         });
     }
 });
@@ -732,7 +737,7 @@ app.get('/getAllNotes', async (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -752,7 +757,7 @@ app.get('/getAllNotes', async (req, res) => {
 //     const sql = 'UPDATE notes SET title = ?, note = ?, editedDate = ? WHERE id = ?';
 //     db.query(sql, [title, content, editedDateUpdate, id], (err, data) => {
 //         // if (err) return res.json({
-//         //     Message: "Błąd po stronie serwera"
+//         //     Message: "Server Side Error"
 //         // });
 //         // else {
 //         //     return res.json({
@@ -760,11 +765,11 @@ app.get('/getAllNotes', async (req, res) => {
 //         //     });
 //         // }
 //         if (err) return sendError(res, 500, {
-//             message: "Błąd po stronie serwera"
+//             message: "Server Side Error"
 //         });
 //         else {
 //             return sendSuccess(res, {
-//                 message: "Operacja zakończona sukcesem"
+//                 message: "The operation was successful"
 //             });
 //         }
 //     });
@@ -774,14 +779,14 @@ app.post('/editnote', validateEdit, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
 
     if (!req.session.user_id) {
         return res.status(401).json({
-            Message: "Użytkownik nie jest zalogowany"
+            Message: "User is not logged in"
         });
     }
 
@@ -799,17 +804,17 @@ app.post('/editnote', validateEdit, async (req, res) => {
 
         if (result.affectedRows > 0) {
             return sendSuccess(res, {
-                message: "Operacja zakończona sukcesem"
+                message: "The operation was successful"
             });
         } else {
             return res.status(404).json({
-                Message: "Nie znaleziono notatki do edycji"
+                Message: "No note found for editing"
             });
         }
     } catch (err) {
-        console.error("Błąd edycji notatki:", err);
+        console.error("Note editing error:", err);
         return sendError(res, 500, {
-            message: "Błąd po stronie serwera"
+            message: "Server Side Error"
         });
     }
 });
@@ -820,7 +825,7 @@ app.post('/editnote', validateEdit, async (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
 //         return res.status(400).json({
-//             Message: "Niewłaściwe dane wejściowe",
+//             Message: "Invalid input data",
 //             errors: errors.array()
 //         });
 //     }
@@ -849,7 +854,7 @@ app.post("/check-email", async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
-            Message: "Niewłaściwe dane wejściowe",
+            Message: "Invalid input data",
             errors: errors.array()
         });
     }
@@ -872,10 +877,10 @@ app.post("/check-email", async (req, res) => {
             }); // Email wolny
         }
     } catch (err) {
-        console.error("Błąd zapytania do bazy:", err);
+        console.error("Database query error:", err);
         return res.status(500).json({
             Status: "Error",
-            Message: "Błąd serwera."
+            Message: "Server Side Error"
         });
     }
 });

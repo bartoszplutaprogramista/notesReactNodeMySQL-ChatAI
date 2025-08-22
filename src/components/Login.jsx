@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router";
+import { api } from '../config/api';
 
 export default function Login() {
     const [values, setValues] = useState({
@@ -13,19 +14,46 @@ export default function Login() {
 
     axios.defaults.withCredentials = true;
 
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     axios.post('http://localhost:8081/login', values)
+    //         .then(res => {
+    //             if (res.data.Status === "Success") {
+    //                 console.warn(res.data.data.message);
+    //                 navigate('/');
+    //             } else {
+    //                 // alert("Nie ma nikogo w bazie", res.data.Message)
+    //                 alert("Nie ma nikogo w bazie")
+    //             }
+    //         })
+    //         .catch(err => console.error(err));
+    // }
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:8081/login', values)
+
+        api.post('/login', values)
             .then(res => {
                 if (res.data.Status === "Success") {
-                    console.warn(res.data.data.message);
+                    console.warn(res.data.data.Message);
                     navigate('/');
                 } else {
-                    alert("Nie ma nikogo w bazie", res.data.Massage)
+                    alert("❌Nie ma nikogo w bazie: " + res.data.Message);
                 }
             })
-            .catch(err => console.group(err));
-    }
+            .catch(err => {
+                if (err.response && err.response.status === 401) {
+                    alert("🔐 Nieprawidłowy email lub hasło");
+                } else if (err.response && err.response.status === 400) {
+                    alert("❌ Błąd walidacji: " + JSON.stringify(err.response.data.errors));
+                } else {
+                    alert("💥 Błąd serwera");
+                }
+                console.error("Axios error:", err);
+            });
+    };
+
 
     return (
         <div className='d-flex justify-content-center align-items-center login-page vh-100'>

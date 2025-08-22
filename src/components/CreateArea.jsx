@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { api } from '../config/api';
+// import { useNavigate } from 'react-router-dom';
 
 function CreateArea({ onAdd }) {
 
@@ -23,7 +24,7 @@ function CreateArea({ onAdd }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8081/savetodatabase', note, {
+    api.post('/savetodatabase', note, {
       withCredentials: true,
       maxContentLength: Infinity,
       maxBodyLength: Infinity
@@ -40,7 +41,7 @@ function CreateArea({ onAdd }) {
           alert("Nie dodano");
         }
       })
-      .catch(err => console.group(err));
+      .catch(err => console.error(err));
   }
 
   return (
@@ -49,10 +50,11 @@ function CreateArea({ onAdd }) {
 
         <input
           name="title"
-          onChange={e => {
-            setNote({ ...note, title: e.target.value });
-            { handleChange };
-          }}
+          onChange={handleChange}
+          // onChange={e => setNote(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+          // setNote({ ...note, title: e.target.value });
+          // setNote(prev => ({ ...prev, [e.target.name]: e.target.value }))
+          // { handleChange };
           value={note.title}
           placeholder="Tytuł notatki..."
           maxLength="22"
@@ -61,10 +63,13 @@ function CreateArea({ onAdd }) {
 
         <textarea
           name="content"
-          onChange={e => {
-            setNote({ ...note, content: e.target.value });
-            { handleChange };
-          }}
+          onChange={handleChange}
+          // onChange={e => setNote(prev => ({ ...prev, [e.target.value]: e.target.value }))}
+          // onChange={e => {
+          // setNote(prev => ({ ...prev, [e.target.value]: e.target.value }))
+          // setNote({ ...note, content: e.target.value });
+          // { handleChange };
+
           value={note.content}
           placeholder="Wpisz treść notatki..."
           rows="3"

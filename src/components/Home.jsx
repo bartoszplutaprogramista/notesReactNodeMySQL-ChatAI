@@ -1,6 +1,6 @@
-import ChatbotIcon from "./ChatbotIcon";
-import ChatForm from "./ChatForm";
-import ChatMessage from "./ChatMessage";
+// import ChatbotIcon from "./ChatbotIcon";
+// import ChatForm from "./ChatForm";
+// import ChatMessage from "./ChatMessage";
 import ChatBotAIBody from "./ChatBotAIBody";
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import Note from "./Note";
 import CreateArea from "./CreateArea";
 import Header from "./Header";
 import Footer from "./Footer";
+import { api } from '../config/api';
 
 export default function Home() {
     const [auth, setAuth] = useState(false);
@@ -20,7 +21,7 @@ export default function Home() {
 
     axios.defaults.withCredentials = true;
     useEffect(() => {
-        axios.get('http://localhost:8081')
+        api.get('/')
             .then(res => {
                 if (res.data.Status === "Success") {
                     setAuth(true);
@@ -35,10 +36,10 @@ export default function Home() {
     }, []);
 
     const handleLogout = () => {
-        axios.get('http://localhost:8081/logout')
+        api.get('/logout')
             .then(res => {
                 if (res.data.Status === "Success") {
-                    location.reload(true);
+                    window.location.reload();
                 } else {
                     alert("error");
                 }
@@ -46,7 +47,7 @@ export default function Home() {
     }
 
     const fetchData = () => {
-        axios.get('http://localhost:8081/getAllNotes', { withCredentials: true })
+        api.get('/getAllNotes', { withCredentials: true })
             .then(response => {
                 // setData(response.data.data);
                 if (response.data.success && response.data.data) {
@@ -68,7 +69,7 @@ export default function Home() {
     // }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/check-session', { withCredentials: true })
+        api.get('/check-session', { withCredentials: true })
             .then(res => {
                 if (res.data.isLoggedIn) {
                     setIsLoggedIn(true);

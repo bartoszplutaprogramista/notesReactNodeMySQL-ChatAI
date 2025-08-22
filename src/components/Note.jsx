@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@mui/icons-material/Edit';
-import axios from 'axios';
-import { Buffer } from 'buffer';
+// import axios from 'axios';
+// import { Buffer } from 'buffer';
 import SaveIcon from '@mui/icons-material/Save';
+import { api } from '../config/api';
 
 
 
@@ -19,7 +20,8 @@ function Note({ data, fetchData }) {
     setEditContent(note.noteOfNote);
   };
   const handleSave = (id) => {
-    axios.post('http://localhost:8081/editnote', {
+    // axios.post('http://localhost:8081/editnote', {
+    api.post('/editnote', {
       id,
       title: editTitle,
       content: editContent
@@ -32,13 +34,17 @@ function Note({ data, fetchData }) {
           alert("Nie zaktualizowano");
         }
       })
-      .catch(err => console.group(err));
+      .catch(err => {
+        console.error('Error details: ', err);
+        alert("Wystąpił błąd podczas edycji notatki");
+      });
   };
 
-  const contentLength = Buffer.byteLength(JSON.stringify({ fetchData }));
+  // const contentLength = Buffer.byteLength(JSON.stringify({ fetchData }));
 
   const handleDelete = (id) => {
-    axios.post('http://localhost:8081/deletenote', { id })
+    // axios.post('http://localhost:8081/deletenote', { id })
+    api.post('/deletenote', { id })
       .then(res => {
         if (res.data.Status === "Success") {
           console.warn(res.data.data.message);
@@ -47,7 +53,10 @@ function Note({ data, fetchData }) {
           alert("Nie usunięto");
         }
       })
-      .catch(err => console.group(err));
+      .catch(err => {
+        console.error('Error details: ', err);
+        alert("Wystąpił błąd podczas usuwania notatki");
+      });
   };
 
   return (
