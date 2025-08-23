@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
 import axios from 'axios';
 import { api } from '../config/api';
-// import { useNavigate } from 'react-router-dom';
 
 function CreateArea({ onAdd }) {
 

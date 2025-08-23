@@ -1,6 +1,3 @@
-// import ChatbotIcon from "./ChatbotIcon";
-// import ChatForm from "./ChatForm";
-// import ChatMessage from "./ChatMessage";
 import ChatBotAIBody from "./ChatBotAIBody";
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
@@ -49,12 +46,10 @@ export default function Home() {
     const fetchData = () => {
         api.get('/getAllNotes', { withCredentials: true })
             .then(response => {
-                // setData(response.data.data);
                 if (response.data.success && response.data.data) {
                     setData(response.data.data);
                 } else if (response.data.Message) {
                     console.warn("Info z backendu:", response.data.Message);
-                    // Możesz też ustawić pustą tablicę lub komunikat dla użytkownika
                     setData([]);
                 }
 
@@ -64,19 +59,15 @@ export default function Home() {
             });
     };
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
-
     useEffect(() => {
         api.get('/check-session', { withCredentials: true })
             .then(res => {
                 if (res.data.isLoggedIn) {
                     setIsLoggedIn(true);
-                    fetchData(); // dopiero teraz pobieramy notatki
+                    fetchData();
                 } else {
                     setIsLoggedIn(false);
-                    setData([]); // lub pokaż komunikat
+                    setData([]);
                 }
             })
             .catch(err => {
@@ -105,9 +96,9 @@ export default function Home() {
                     :
                     <div className="d-flex align-items-center justify-content-center mt-5 flex-column">
                         <div className="home-page">
-                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
+                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdym nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
                         </div>
-                        <h3 className="mt-4">Zaloguj się lub zarejestruj się teraz</h3>
+                        <h3 className="mt-4 text-center">Zaloguj się lub zarejestruj się teraz</h3>
                         <Link to="/login" className='btn btn-primary ms-3'>Zaloguj się/Zarejestruj się</Link>
                     </div>
             }

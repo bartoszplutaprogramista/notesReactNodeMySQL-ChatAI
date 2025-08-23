@@ -46,8 +46,6 @@ export default function Registration() {
             } else {
                 setEmailStatus("Nieznany błąd.");
             }
-
-            // setEmailStatus("Błąd podczas sprawdzania emaila.");
         }
     };
 
@@ -92,7 +90,7 @@ export default function Registration() {
 
     return (
         <div className='d-flex justify-content-center align-items-center login-page vh-100'>
-            <div className='bg-white p-3 rounded w-50'>
+            <div className='bg-white p-3 rounded login-registration-width'>
                 <h2>Rejestracja</h2>
                 <form onSubmit={handleSubmit}>
                     <div className='mb-3'>
@@ -131,8 +129,6 @@ export default function Registration() {
                     <b>Masz już konto? <Link className={"link-styles"} to="/login">Zaloguj się</Link></b>
                 </div>
             </div>
-
-
         </div>
     )
 }

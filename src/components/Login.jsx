@@ -14,22 +14,6 @@ export default function Login() {
 
     axios.defaults.withCredentials = true;
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     axios.post('http://localhost:8081/login', values)
-    //         .then(res => {
-    //             if (res.data.Status === "Success") {
-    //                 console.warn(res.data.data.message);
-    //                 navigate('/');
-    //             } else {
-    //                 // alert("Nie ma nikogo w bazie", res.data.Message)
-    //                 alert("Nie ma nikogo w bazie")
-    //             }
-    //         })
-    //         .catch(err => console.error(err));
-    // }
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -57,16 +41,16 @@ export default function Login() {
 
     return (
         <div className='d-flex justify-content-center align-items-center login-page vh-100'>
-            <div className='bg-white p-3 rounded w-50'>
+            <div className='bg-white p-3 rounded login-registration-width'>
                 <h2>Logowanie</h2>
                 <form onSubmit={handleSubmit}>
                     <div className='mb-3'>
                         <label htmlFor="email"><strong>Email</strong></label>
-                        <input type="email" placeholder="Wpisz email" name='email' autoComplete='off' onChange={e => setValues({ ...values, email: e.target.value })} className='form-control rounded-0' />
+                        <input type="email" placeholder="Wpisz email" name='email' autoComplete='off' onChange={e => setValues({ ...values, email: e.target.value })} className='form-control rounded-0' required />
                     </div>
                     <div className='mb-3'>
                         <label htmlFor="password"><strong>Hasło</strong></label>
-                        <input type="password" placeholder="Wpisz hasło" name='password' onChange={e => setValues({ ...values, password: e.target.value })} className='form-control rounded-0' />
+                        <input type="password" placeholder="Wpisz hasło" name='password' onChange={e => setValues({ ...values, password: e.target.value })} className='form-control rounded-0' required />
                     </div>
                     <button type='submit' className='btn btn-danger w-100 rounded-0'>Zaloguj się</button>
                 </form>

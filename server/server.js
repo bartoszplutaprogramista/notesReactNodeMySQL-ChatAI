@@ -15,10 +15,6 @@ dotenv.config();
 
 const app = express();
 
-// const user_id;
-
-// console.log('SESSION_SECRET:', process.env.SESSION_SECRET);
-
 app.use(cookieParser());
 
 app.use(cors({
@@ -26,15 +22,6 @@ app.use(cors({
     methods: ["POST, GET"],
     credentials: true
 }))
-
-// app.use(session({
-//     secret: 'my-secret',
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: {
-//         secure: false
-//     }
-// }));
 
 const sendError = (res, statusCode, message) => {
     return res.status(statusCode).json({
@@ -54,9 +41,8 @@ const sendSuccess = (res, data = null) => {
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false, // Zmienione na false ze względów bezpieczeństwa
+    saveUninitialized: false,
     cookie: {
-        // secure: process.env.NODE_ENV === 'production',
         secure: false,
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000 // 24 godziny
@@ -67,39 +53,6 @@ app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
-
-// const db = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "",
-//     database: "notes_db"
-// })
-
-// const db = mysql.createConnection({
-//     host: process.env.DB_HOST || "localhost",
-//     user: process.env.DB_USER || "root",
-//     password: process.env.DB_PASSWORD || "",
-//     database: process.env.DB_NAME || "notes_db",
-//     charset: 'utf8mb4'
-// });
-
-// const db = mysql.createConnection({
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME,
-//     charset: 'utf8mb4'
-// });
-
-// db.query((err) => {
-//     if (err) {
-//         console.error('Database connection failed:', err);
-//         process.exit(1);
-//     }
-//     console.log('Connected to MySQL database');
-// });
-
-// import mysql from 'mysql2/promise';
 
 const connectToDatabase = async () => {
     try {
@@ -201,14 +154,6 @@ const validateEdit = [
     }).escape()
 ];
 
-const validateEmail = [
-    body('email').trim().isLength({
-        min: 6,
-        max: 100
-    }).escape()
-];
-
-
 app.get('/', verifyUser, (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -223,82 +168,6 @@ app.get('/', verifyUser, (req, res) => {
         user_id: req.user_id
     })
 })
-
-
-
-
-// app.post('/login', (req, res) => {
-
-//     const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
-
-//     db.query(sql, [req.body.email, req.body.password], (err, data) => {
-//         if (err) return res.json({
-//             Massage: "Server Side Error"
-//         });
-//         if (data.length > 0) {
-//             const name = data[0].name;
-//             const user_id = data[0].id;
-//             const token = jwt.sign({
-//                 name
-//             }, "our-jsonwebtoken-secret-key", {
-//                 expiresIn: '1d'
-//             });
-//             res.cookie('token', token);
-//             req.session.user_id = user_id;
-//             return res.json({
-//                 Status: "Success"
-//             })
-//         } else {
-//             return res.json({
-//                 Message: "No Records existed"
-//             });
-//         }
-//     })
-// })
-
-// app.post('/login', validateLogin, async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-//     const sql = 'SELECT * FROM users WHERE email = ?';
-
-//     db.query(sql, [req.body.email], async (err, data) => {
-//         if (err) return res.status(500).json({
-//             Message: "Server Side Error"
-//         });
-
-//         if (data.length > 0) {
-//             const isPasswordValid = await bcrypt.compare(req.body.password, data[0].password);
-
-//             if (isPasswordValid) {
-//                 const name = data[0].name;
-//                 const user_id = data[0].id;
-//                 const token = jwt.sign({
-//                     name,
-//                     id: user_id
-//                 }, process.env.JWT_SECRET, {
-//                     expiresIn: '1d'
-//                 });
-//                 res.cookie('token', token);
-//                 req.session.user_id = user_id;
-//                 console.log('USER_ID WYNOSI: ', user_id);
-//                 // return res.json({
-//                 //     Status: "Success"
-//                 // });
-//                 return sendSuccess(res, {
-//                     message: "The operation was successful"
-//                 });
-//             }
-//         }
-//         return res.json({
-//             Message: "Incorrect data"
-//         });
-//     });
-// });
 
 app.post('/login', validateLogin, async (req, res) => {
     const errors = validationResult(req);
@@ -341,13 +210,6 @@ app.post('/login', validateLogin, async (req, res) => {
         return sendError(res, 401, {
             message: "Incorrect data"
         });
-        // return res.json({
-        //     success: false,
-        //     Status: "Failure",
-        //     Message: "Nie ma nikogo w bazie"
-        // });
-
-
     } catch (err) {
         console.error('Login error:', err);
         return res.status(500).json({
@@ -355,56 +217,6 @@ app.post('/login', validateLogin, async (req, res) => {
         });
     }
 });
-
-
-
-// app.post('/registration', (req, res) => {
-//     const sql = 'INSERT INTO users (name, email, password) VALUES (?,?,?)';
-//     db.query(sql, [req.body.name, req.body.email, req.body.password], (err, data) => {
-//         if (err) return res.json({
-//             Massage: "Server Side Error"
-//         })
-//         else {
-//             return res.json({
-//                 Status: "Success"
-//             })
-//         }
-//     })
-// })
-
-// app.post('/registration', validateRegistration, async (req, res) => {
-//     try {
-//         const errors = validationResult(req);
-//         if (!errors.isEmpty()) {
-//             return res.status(400).json({
-//                 Message: "Invalid input data",
-//                 errors: errors.array()
-//             });
-//         }
-//         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-//         const sql = 'INSERT INTO users (name, email, password) VALUES (?,?,?)';
-//         db.query(sql, [req.body.name, req.body.email, hashedPassword], (err, data) => {
-//             // if (err) return res.status(500).json({
-//             //     Message: "Server Side Error"
-//             // });
-//             // return res.json({
-//             //     Status: "Success"
-//             // });
-//             if (err) return sendError(res, 500, {
-//                 message: "Server Side Error"
-//             });
-//             else {
-//                 return sendSuccess(res, {
-//                     message: "The operation was successful"
-//                 });
-//             }
-//         });
-//     } catch (error) {
-//         return res.status(500).json({
-//             Message: "Server Side Error"
-//         });
-//     }
-// });
 
 app.post('/registration', validateRegistration, async (req, res) => {
     const errors = validationResult(req);
@@ -440,56 +252,6 @@ app.post('/registration', validateRegistration, async (req, res) => {
         });
     }
 });
-
-
-// app.post('/savetodatabase', validateNote, async (req, res) => {
-//     console.log('USER_ID WYNOSI: ', req.session.user_id);
-
-//     // if (!req.session.user_id) {
-//     //     return res.json({
-//     //         Massage: "Uzytkownik nie jest zalogowany"
-//     //     });
-//     // }
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-
-//     if (!req.session.user_id) {
-//         return res.json({
-//             Message: "Uzytkownik nie jest zalogowany"
-//         });
-//     }
-//     const user_id = req.session.user_id;
-
-
-
-//     const today = new Date();
-//     const currentDate = new Date().toISOString().split('T')[0];
-
-//     const sql = 'INSERT INTO notes (user_id, title, note, date) VALUES (?, ?, ?, ?)';
-//     db.query(sql, [user_id, req.body.title, req.body.content, currentDate], (err, data) => {
-//         // if (err) return res.json({
-//         //     Massage: "Server Side Error"
-//         // })
-//         // else {
-//         //     return res.json({
-//         //         Status: "Success"
-//         //     })
-//         // }
-//         if (err) return sendError(res, 500, {
-//             message: "Server Side Error"
-//         });
-//         else {
-//             return sendSuccess(res, {
-//                 message: "The operation was successful"
-//             });
-//         }
-//     })
-// });
 
 app.post('/savetodatabase', validateNote, async (req, res) => {
     console.log('USER_ID WYNOSI: ', req.session.user_id);
@@ -538,46 +300,6 @@ app.post('/savetodatabase', validateNote, async (req, res) => {
     }
 });
 
-
-// app.post('/deletenote', (req, res) => {
-
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-
-//     if (!req.session.user_id) {
-//         return res.json({
-//             Message: "Uzytkownik nie jest zalogowany"
-//         });
-//     }
-
-//     const note_id = req.body.id;
-
-//     const sql = 'DELETE FROM notes WHERE id = ?';
-//     db.query(sql, [note_id], (err, data) => {
-//         if (err) return sendError(res, 500, {
-//             message: "Server Side Error"
-//         });
-//         else {
-//             return sendSuccess(res, {
-//                 message: "The operation was successful"
-//             });
-//         }
-//         // if (err) return res.json({
-//         //     Massage: "Server Side Error"
-//         // })
-//         // else {
-//         //     return res.json({
-//         //         Status: "Success"
-//         //     })
-//         // }
-//     })
-// })
-
 app.post('/deletenote', async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -625,67 +347,12 @@ app.get('/logout', (req, res) => {
             errors: errors.array()
         });
     }
-
-    // if (!req.session.user_id) {
-    //     return res.json({
-    //         Message: "Uzytkownik nie jest zalogowany"
-    //     });
-    // }
     res.clearCookie('token');
     req.session.destroy();
-    // return res.json({
-    //     Status: "Success"
-    // })
     return sendSuccess(res, {
         message: "The operation was successful"
     });
 })
-
-// app.get('/getAllNotes', async (req, res) => {
-//     // if (!req.session.user_id) {
-//     //     return res.json({
-//     //         Massage: "User is not logged in"
-//     //     });
-//     // }
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-
-//     if (!req.session.user_id) {
-//         return res.json({
-//             Message: "Uzytkownik nie jest zalogowany"
-//         });
-//     }
-
-//     const user_id = req.session.user_id;
-
-//     const sql = 'SELECT id AS idOfNote, title AS titleOfNote, note AS noteOfNote, DATE(date) AS dateOfNote, DATE(editedDate) AS editedDateOfNote FROM notes WHERE user_id = ?';
-
-//     db.query(sql, [user_id], (err, data) => {
-//         if (err) return sendError(res, 500, {
-//             message: "Server Side Error"
-//         });
-//         // if (err) return res.json({
-//         //     Massage: "Server Side Error"
-//         // })
-//         if ((data.length > 0) && (user_id > 0)) {
-//             // res.json(data);
-//             return sendSuccess(res, data);
-
-//             // sendSuccess(res,
-//             //     data
-//             // );
-//         } else {
-//             return res.json({
-//                 Message: "Nie ma żadnych rekordów"
-//             });
-//         }
-//     })
-// })
 
 app.get('/getAllNotes', async (req, res) => {
     const errors = validationResult(req);
@@ -721,7 +388,7 @@ app.get('/getAllNotes', async (req, res) => {
         if (data.length > 0) {
             return sendSuccess(res, data);
         } else {
-            return sendSuccess(res, []); // lub res.json({ success: true, data: [] });
+            return sendSuccess(res, []);
         }
 
     } catch (err) {
@@ -731,49 +398,6 @@ app.get('/getAllNotes', async (req, res) => {
         });
     }
 });
-
-
-// app.post('/editnote', validateEdit, async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-
-//     if (!req.session.user_id) {
-//         return res.json({
-//             Message: "Uzytkownik nie jest zalogowany"
-//         });
-//     }
-//     const {
-//         id,
-//         title,
-//         content
-//     } = req.body;
-//     const editedDateUpdate = new Date().toISOString().split('T')[0];
-
-//     const sql = 'UPDATE notes SET title = ?, note = ?, editedDate = ? WHERE id = ?';
-//     db.query(sql, [title, content, editedDateUpdate, id], (err, data) => {
-//         // if (err) return res.json({
-//         //     Message: "Server Side Error"
-//         // });
-//         // else {
-//         //     return res.json({
-//         //         Status: "Success"
-//         //     });
-//         // }
-//         if (err) return sendError(res, 500, {
-//             message: "Server Side Error"
-//         });
-//         else {
-//             return sendSuccess(res, {
-//                 message: "The operation was successful"
-//             });
-//         }
-//     });
-// });
 
 app.post('/editnote', validateEdit, async (req, res) => {
     const errors = validationResult(req);
@@ -818,37 +442,6 @@ app.post('/editnote', validateEdit, async (req, res) => {
         });
     }
 });
-
-
-// app.post("/check-email", validateEmail, async (req, res) => {
-// app.post("/check-email", async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).json({
-//             Message: "Invalid input data",
-//             errors: errors.array()
-//         });
-//     }
-//     const {
-//         email
-//     } = req.body;
-//     const query = "SELECT * FROM users WHERE email = ?";
-
-//     db.query(query, [email], (err, result) => {
-//         if (err) {
-//             return res.status(500).json({
-//                 Status: "Error",
-//                 Message: "Błąd serwera."
-//             });
-//         }
-
-//         if (result.length > 0) {
-//             res.json({
-//                 Status: "Taken"
-//             }); // Email zajęty
-//         }
-//     });
-// });
 
 app.post("/check-email", async (req, res) => {
     const errors = validationResult(req);
