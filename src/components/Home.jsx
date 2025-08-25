@@ -96,7 +96,7 @@ export default function Home() {
                     :
                     <div className="d-flex align-items-center justify-content-center mt-5 flex-column">
                         <div className="home-page">
-                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdym nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
+                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdym nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu gemini. </h3>
                         </div>
                         <h3 className="mt-4 text-center">Zaloguj się lub zarejestruj się teraz</h3>
                         <Link to="/login" className='btn btn-primary ms-3'>Zaloguj się/Zarejestruj się</Link>

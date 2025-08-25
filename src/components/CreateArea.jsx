@@ -50,29 +50,21 @@ function CreateArea({ onAdd }) {
         <input
           name="title"
           onChange={handleChange}
-          // onChange={e => setNote(prev => ({ ...prev, [e.target.name]: e.target.value }))}
-          // setNote({ ...note, title: e.target.value });
-          // setNote(prev => ({ ...prev, [e.target.name]: e.target.value }))
-          // { handleChange };
           value={note.title}
-          placeholder="Tytuł notatki..."
+          placeholder="Tytuł wpisu..."
           maxLength="22"
+          required
         />
 
 
         <textarea
           name="content"
           onChange={handleChange}
-          // onChange={e => setNote(prev => ({ ...prev, [e.target.value]: e.target.value }))}
-          // onChange={e => {
-          // setNote(prev => ({ ...prev, [e.target.value]: e.target.value }))
-          // setNote({ ...note, content: e.target.value });
-          // { handleChange };
-
           value={note.content}
-          placeholder="Wpisz treść notatki..."
+          placeholder="Wpisz treść..."
           rows="3"
           maxLength="400"
+          required
         />
         <button title="Dodaj notatkę" type='submit'><AddIcon /></button>
       </form>

@@ -200,7 +200,6 @@ app.post('/login', validateLogin, async (req, res) => {
 
                 res.cookie('token', token);
                 req.session.user_id = user_id;
-                console.log('USER_ID WYNOSI: ', user_id);
 
                 return sendSuccess(res, {
                     Message: "The operation was successful"
@@ -254,8 +253,6 @@ app.post('/registration', validateRegistration, async (req, res) => {
 });
 
 app.post('/savetodatabase', validateNote, async (req, res) => {
-    console.log('USER_ID WYNOSI: ', req.session.user_id);
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
