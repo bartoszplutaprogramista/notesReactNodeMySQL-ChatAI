@@ -190,6 +190,10 @@ form.create-note button {
   outline: none;
 }
 
+.login-registration-width {
+  width: 700px;
+}
+
 @media (max-width: 1400px)
 {
   .home-page {
@@ -202,6 +206,9 @@ form.create-note button {
     form.create-note {
     width: 100%;
   }
+  .login-registration-width {
+  width: 100%;
+}
 }
 
 @media (max-width: 270px) {

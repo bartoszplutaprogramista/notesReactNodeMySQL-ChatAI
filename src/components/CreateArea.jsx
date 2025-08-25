@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddIcon from "@material-ui/icons/Add";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { api } from '../config/api';
 
 function CreateArea({ onAdd }) {
 
@@ -23,12 +23,14 @@ function CreateArea({ onAdd }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8081/savetodatabase', note, {
+    api.post('/savetodatabase', note, {
+      withCredentials: true,
       maxContentLength: Infinity,
       maxBodyLength: Infinity
     })
       .then(res => {
         if (res.data.Status === "Success") {
+          console.warn("Info z backendu:", res.data.data.message);
           onAdd();
           setNote({
             title: "",
@@ -38,7 +40,7 @@ function CreateArea({ onAdd }) {
           alert("Nie dodano");
         }
       })
-      .catch(err => console.group(err));
+      .catch(err => console.error(err));
   }
 
   return (
@@ -47,26 +49,22 @@ function CreateArea({ onAdd }) {
 
         <input
           name="title"
-          onChange={e => {
-            setNote({ ...note, title: e.target.value });
-            { handleChange };
-          }}
+          onChange={handleChange}
           value={note.title}
-          placeholder="Tytuł notatki..."
+          placeholder="Tytuł wpisu..."
           maxLength="22"
+          required
         />
 
 
         <textarea
           name="content"
-          onChange={e => {
-            setNote({ ...note, content: e.target.value });
-            { handleChange };
-          }}
+          onChange={handleChange}
           value={note.content}
-          placeholder="Wpisz treść notatki..."
+          placeholder="Wpisz treść..."
           rows="3"
           maxLength="400"
+          required
         />
         <button title="Dodaj notatkę" type='submit'><AddIcon /></button>
       </form>

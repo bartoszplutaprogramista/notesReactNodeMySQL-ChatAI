@@ -1,22 +1,6 @@
 /* Importing Google Fonts - Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
 
-/* * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
-}
-
-body {
-    width: 100%; */
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
-    /* min-height: 100vh;
-    background: linear-gradient(#F4F0FF, #DACDFF); 
-} */
-
 #chatbot-toggler {
     position: fixed;
     bottom: 30px;
@@ -81,7 +65,6 @@ body {
     padding: 15px 22px;
     align-items: center;
     justify-content: space-between;
-    /* background: #6D4FC2; */
     background: #f5ba13;
 }
 
@@ -261,7 +244,7 @@ body {
     }
 
     .chat-body {
-        height: calc(90% -55px);
+        height: 90%;
         padding: 25px 15px;
     }
     .chat-footer {

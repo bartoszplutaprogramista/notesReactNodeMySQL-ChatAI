@@ -1,9 +1,17 @@
 import express from 'express';
-import mysql from 'mysql';
+import mysql from 'mysql2/promise';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import {
+    body,
+    validationResult
+} from 'express-validator';
+
+dotenv.config();
 
 const app = express();
 
@@ -15,12 +23,29 @@ app.use(cors({
     credentials: true
 }))
 
+const sendError = (res, statusCode, message) => {
+    return res.status(statusCode).json({
+        success: false,
+        message
+    });
+};
+
+const sendSuccess = (res, data = null) => {
+    return res.json({
+        success: true,
+        Status: "Success",
+        data
+    });
+};
+
 app.use(session({
-    secret: 'my-secret',
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-        secure: false
+        secure: false,
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 godziny
     }
 }));
 
@@ -29,21 +54,40 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "notes_db"
-})
+const connectToDatabase = async () => {
+    try {
+        const db = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            charset: 'utf8mb4'
+        });
+
+        // Testowe zapytanie
+        await db.query('SELECT 1');
+        console.log('Connected to MySQL database');
+
+        return db;
+    } catch (err) {
+        console.error('Database connection failed:', err);
+        process.exit(1);
+    }
+};
+
+const db = await connectToDatabase();
+
+
+
 
 const verifyUser = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
         return res.json({
-            Message: "we need token please provide it login now"
+            Message: "We need token please provide it login now"
         })
     } else {
-        jwt.verify(token, "our-jsonwebtoken-secret-key", (err, decoded) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
             if (err) {
                 return res.json({
                     Message: "Authentication Error"
@@ -58,7 +102,66 @@ const verifyUser = (req, res, next) => {
 
 }
 
+const validateNote = [
+    body('title').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('content').trim().isLength({
+        min: 1,
+        max: 1000
+    }).escape()
+];
+
+const validateLogin = [
+    body('email').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('password').trim().isLength({
+        min: 1,
+        max: 1000
+    }).escape()
+];
+
+const validateRegistration = [
+    body('name').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('email').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('password').trim().isLength({
+        min: 1,
+        max: 1000
+    }).escape()
+];
+
+const validateEdit = [
+    body('id').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('title').trim().isLength({
+        min: 1,
+        max: 100
+    }).escape(),
+    body('content').trim().isLength({
+        min: 1,
+        max: 1000
+    }).escape()
+];
+
 app.get('/', verifyUser, (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
     return res.json({
         Status: "Success",
         name: req.name,
@@ -66,128 +169,248 @@ app.get('/', verifyUser, (req, res) => {
     })
 })
 
-
-app.post('/login', (req, res) => {
-
-    const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
-
-    db.query(sql, [req.body.email, req.body.password], (err, data) => {
-        if (err) return res.json({
-            Massage: "Server Side Error"
-        });
-        if (data.length > 0) {
-            const name = data[0].name;
-            const user_id = data[0].id;
-            const token = jwt.sign({
-                name
-            }, "our-jsonwebtoken-secret-key", {
-                expiresIn: '1d'
-            });
-            res.cookie('token', token);
-            req.session.user_id = user_id;
-            return res.json({
-                Status: "Success"
-            })
-        } else {
-            return res.json({
-                Message: "No Records existed"
-            });
-        }
-    })
-})
-
-
-
-app.post('/registration', (req, res) => {
-    const sql = 'INSERT INTO users (name, email, password) VALUES (?,?,?)';
-    db.query(sql, [req.body.name, req.body.email, req.body.password], (err, data) => {
-        if (err) return res.json({
-            Massage: "Server Side Error"
-        })
-        else {
-            return res.json({
-                Status: "Success"
-            })
-        }
-    })
-})
-
-
-app.post('/savetodatabase', async (req, res) => {
-    if (!req.session.user_id) {
-        return res.json({
-            Massage: "Uzytkownik nie jest zalogowany"
+app.post('/login', validateLogin, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
         });
     }
-    const user_id = req.session.user_id;
 
-    const today = new Date();
+    const sql = 'SELECT * FROM users WHERE email = ?';
+
+    try {
+        const [data] = await db.query(sql, [req.body.email]);
+
+        if (data.length > 0) {
+            const isPasswordValid = await bcrypt.compare(req.body.password, data[0].password);
+
+            if (isPasswordValid) {
+                const name = data[0].name;
+                const user_id = data[0].id;
+                const token = jwt.sign({
+                        name,
+                        id: user_id
+                    },
+                    process.env.JWT_SECRET, {
+                        expiresIn: '1d'
+                    }
+                );
+
+                res.cookie('token', token);
+                req.session.user_id = user_id;
+
+                return sendSuccess(res, {
+                    Message: "The operation was successful"
+                });
+            }
+        }
+        return sendError(res, 401, {
+            message: "Incorrect data"
+        });
+    } catch (err) {
+        console.error('Login error:', err);
+        return res.status(500).json({
+            Message: "Server Side Error"
+        });
+    }
+});
+
+app.post('/registration', validateRegistration, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+        const [result] = await db.query(sql, [
+            req.body.name,
+            req.body.email,
+            hashedPassword
+        ]);
+
+        if (result.affectedRows > 0) {
+            return sendSuccess(res, {
+                message: "The operation was successful"
+            });
+        } else {
+            return res.status(500).json({
+                Message: "Failed to register user"
+            });
+        }
+    } catch (error) {
+        console.error("Registration Error:", error);
+        return sendError(res, 500, {
+            message: "Server Side Error"
+        });
+    }
+});
+
+app.post('/savetodatabase', validateNote, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
+    if (!req.session.user_id) {
+        return res.status(401).json({
+            Message: "User is not logged in"
+        });
+    }
+
+    const user_id = req.session.user_id;
     const currentDate = new Date().toISOString().split('T')[0];
 
     const sql = 'INSERT INTO notes (user_id, title, note, date) VALUES (?, ?, ?, ?)';
-    db.query(sql, [user_id, req.body.title, req.body.content, currentDate], (err, data) => {
-        if (err) return res.json({
-            Massage: "Server Side Error"
-        })
-        else {
-            return res.json({
-                Status: "Success"
-            })
+
+    try {
+        const [result] = await db.query(sql, [
+            user_id,
+            req.body.title,
+            req.body.content,
+            currentDate
+        ]);
+
+        if (result.affectedRows > 0) {
+            return sendSuccess(res, {
+                message: "The operation was successful"
+            });
+        } else {
+            return res.status(500).json({
+                Message: "Failed to save note"
+            });
         }
-    })
+    } catch (err) {
+        console.error("Note saving error:", err);
+        return sendError(res, 500, {
+            message: "Server Side Error"
+        });
+    }
 });
 
-app.post('/deletenote', (req, res) => {
+app.post('/deletenote', async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
+    if (!req.session.user_id) {
+        return res.status(401).json({
+            Message: "User is not logged in"
+        });
+    }
 
     const note_id = req.body.id;
-
     const sql = 'DELETE FROM notes WHERE id = ?';
-    db.query(sql, [note_id], (err, data) => {
-        if (err) return res.json({
-            Massage: "Server Side Error"
-        })
-        else {
-            return res.json({
-                Status: "Success"
-            })
+
+    try {
+        const [result] = await db.query(sql, [note_id]);
+
+        if (result.affectedRows > 0) {
+            return sendSuccess(res, {
+                message: "The operation was successful"
+            });
+        } else {
+            return res.status(404).json({
+                Message: "No note found to delete"
+            });
         }
-    })
-})
+    } catch (err) {
+        console.error("Error deleting note:", err);
+        return sendError(res, 500, {
+            message: "Server Side Error"
+        });
+    }
+});
+
 
 app.get('/logout', (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
     res.clearCookie('token');
     req.session.destroy();
-    return res.json({
-        Status: "Success"
-    })
+    return sendSuccess(res, {
+        message: "The operation was successful"
+    });
 })
 
-app.get('/getAllNotes', (req, res) => {
+app.get('/getAllNotes', async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
     if (!req.session.user_id) {
-        return res.json({
-            Massage: "User is not logged in"
+        return res.status(401).json({
+            Message: "User is not logged in"
         });
     }
 
     const user_id = req.session.user_id;
 
-    const sql = 'SELECT id AS idOfNote, title AS titleOfNote, note AS noteOfNote, DATE(date) AS dateOfNote, DATE(editedDate) AS editedDateOfNote FROM notes WHERE user_id = ?';
+    const sql = `
+        SELECT 
+            id AS idOfNote, 
+            title AS titleOfNote, 
+            note AS noteOfNote, 
+            DATE(date) AS dateOfNote, 
+            DATE(editedDate) AS editedDateOfNote 
+        FROM notes 
+        WHERE user_id = ?
+    `;
 
-    db.query(sql, [user_id], (err, data) => {
-        if (err) return res.json({
-            Massage: "Server Side Error"
-        })
-        if ((data.length > 0) && (user_id > 0)) {
-            res.json(data);
+    try {
+        const [data] = await db.query(sql, [user_id]);
+
+        if (data.length > 0) {
+            return sendSuccess(res, data);
         } else {
-            return res.json({
-                Message: "No Records existed"
-            });
+            return sendSuccess(res, []);
         }
-    })
-})
 
-app.post('/editnote', (req, res) => {
+    } catch (err) {
+        console.error('Error downloading notes:', err);
+        return sendError(res, 500, {
+            message: "Server Side Error"
+        });
+    }
+});
+
+app.post('/editnote', validateEdit, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
+    if (!req.session.user_id) {
+        return res.status(401).json({
+            Message: "User is not logged in"
+        });
+    }
+
     const {
         id,
         title,
@@ -196,39 +419,75 @@ app.post('/editnote', (req, res) => {
     const editedDateUpdate = new Date().toISOString().split('T')[0];
 
     const sql = 'UPDATE notes SET title = ?, note = ?, editedDate = ? WHERE id = ?';
-    db.query(sql, [title, content, editedDateUpdate, id], (err, data) => {
-        if (err) return res.json({
-            Message: "Server Side Error"
-        });
-        else {
-            return res.json({
-                Status: "Success"
+
+    try {
+        const [result] = await db.query(sql, [title, content, editedDateUpdate, id]);
+
+        if (result.affectedRows > 0) {
+            return sendSuccess(res, {
+                message: "The operation was successful"
+            });
+        } else {
+            return res.status(404).json({
+                Message: "No note found for editing"
             });
         }
-    });
+    } catch (err) {
+        console.error("Note editing error:", err);
+        return sendError(res, 500, {
+            message: "Server Side Error"
+        });
+    }
 });
 
-app.post("/check-email", (req, res) => {
+app.post("/check-email", async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            Message: "Invalid input data",
+            errors: errors.array()
+        });
+    }
+
     const {
         email
     } = req.body;
     const query = "SELECT * FROM users WHERE email = ?";
 
-    db.query(query, [email], (err, result) => {
-        if (err) {
-            return res.status(500).json({
-                Status: "Error",
-                Message: "Błąd serwera."
-            });
-        }
+    try {
+        const [result] = await db.query(query, [email]);
 
         if (result.length > 0) {
-            res.json({
+            return res.json({
                 Status: "Taken"
             }); // Email zajęty
+        } else {
+            return res.json({
+                Status: "Available"
+            }); // Email wolny
         }
-    });
+    } catch (err) {
+        console.error("Database query error:", err);
+        return res.status(500).json({
+            Status: "Error",
+            Message: "Server Side Error"
+        });
+    }
 });
+
+app.get('/check-session', (req, res) => {
+    if (req.session.user_id) {
+        return res.json({
+            isLoggedIn: true,
+            user_id: req.session.user_id
+        });
+    } else {
+        return res.json({
+            isLoggedIn: false
+        });
+    }
+});
+
 
 app.listen(8081, () => {
     console.log("Running...");

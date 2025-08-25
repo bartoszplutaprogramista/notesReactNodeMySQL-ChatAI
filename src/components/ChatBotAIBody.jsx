@@ -11,7 +11,7 @@ function ChatBotAIBody() {
     const generateBotResponse = async (history) => {
         //Helper function to update chat history
         const updateHistory = (text, isError = false) => {
-            setChatHistory(prev => [...prev.filter(msg => msg.text !== "Thinking..."), { role: "model", text, isError }]);
+            setChatHistory(prev => [...prev.filter(msg => msg.text !== "Myślę..."), { role: "model", text, isError }]);
         }
 
         //Format chat history for API request
@@ -65,7 +65,7 @@ function ChatBotAIBody() {
                     <div className="message bot-message">
                         <ChatbotIcon />
                         <p className="message-text">
-                            Hey there 👋 <br /> How can I help you today?</p>
+                            Witam 👋 <br /> Jak mogę Ci pomóc?</p>
                     </div>
                     {/* Render the chat history dynamically */}
                     {chatHistory.map((chat, index) => (

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link } from "react-router";
+import { api } from '../config/api';
 
 export default function Registration() {
     const [values, setValues] = useState({
@@ -35,12 +36,16 @@ export default function Registration() {
 
     const checkEmailAvailability = async (email) => {
         try {
-            const res = await axios.post("http://localhost:8081/check-email", { email });
+            const res = await api.post("/check-email", { email });
             if (res.data.Status === "Taken") {
                 setEmailStatus("Email zajęty.");
             }
         } catch (error) {
-            setEmailStatus("Błąd podczas sprawdzania emaila.");
+            if (error.response && error.response.data && error.response.data.Message) {
+                setEmailStatus(error.response.data.Message); // "Błąd serwera."
+            } else {
+                setEmailStatus("Nieznany błąd.");
+            }
         }
     };
 
@@ -70,22 +75,22 @@ export default function Registration() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:8081/registration', values)
+        api.post('/registration', values)
             .then(res => {
                 if (res.data.Status === "Success") {
                     alert("Zarejestrowano pomyślnie! Możesz się teraz zalogować.")
                     navigate('/login');
 
                 } else {
-                    alert(res.data.Massage)
+                    alert(res.data.Message)
                 }
             })
-            .catch(err => console.group(err));
+            .catch(err => console.error(err));
     }
 
     return (
         <div className='d-flex justify-content-center align-items-center login-page vh-100'>
-            <div className='bg-white p-3 rounded w-50'>
+            <div className='bg-white p-3 rounded login-registration-width'>
                 <h2>Rejestracja</h2>
                 <form onSubmit={handleSubmit}>
                     <div className='mb-3'>
@@ -124,8 +129,6 @@ export default function Registration() {
                     <b>Masz już konto? <Link className={"link-styles"} to="/login">Zaloguj się</Link></b>
                 </div>
             </div>
-
-
         </div>
     )
 }

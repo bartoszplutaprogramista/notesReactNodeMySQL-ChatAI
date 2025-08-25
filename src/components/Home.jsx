@@ -1,6 +1,3 @@
-import ChatbotIcon from "./ChatbotIcon";
-import ChatForm from "./ChatForm";
-import ChatMessage from "./ChatMessage";
 import ChatBotAIBody from "./ChatBotAIBody";
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
@@ -9,16 +6,19 @@ import Note from "./Note";
 import CreateArea from "./CreateArea";
 import Header from "./Header";
 import Footer from "./Footer";
+import { api } from '../config/api';
 
 export default function Home() {
     const [auth, setAuth] = useState(false);
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [dataAll, setData] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
 
     axios.defaults.withCredentials = true;
     useEffect(() => {
-        axios.get('http://localhost:8081')
+        api.get('/')
             .then(res => {
                 if (res.data.Status === "Success") {
                     setAuth(true);
@@ -33,10 +33,10 @@ export default function Home() {
     }, []);
 
     const handleLogout = () => {
-        axios.get('http://localhost:8081/logout')
+        api.get('/logout')
             .then(res => {
                 if (res.data.Status === "Success") {
-                    location.reload(true);
+                    window.location.reload();
                 } else {
                     alert("error");
                 }
@@ -44,9 +44,15 @@ export default function Home() {
     }
 
     const fetchData = () => {
-        axios.get('http://localhost:8081/getAllNotes')
+        api.get('/getAllNotes', { withCredentials: true })
             .then(response => {
-                setData(response.data);
+                if (response.data.success && response.data.data) {
+                    setData(response.data.data);
+                } else if (response.data.Message) {
+                    console.warn("Info z backendu:", response.data.Message);
+                    setData([]);
+                }
+
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -54,8 +60,21 @@ export default function Home() {
     };
 
     useEffect(() => {
-        fetchData();
+        api.get('/check-session', { withCredentials: true })
+            .then(res => {
+                if (res.data.isLoggedIn) {
+                    setIsLoggedIn(true);
+                    fetchData();
+                } else {
+                    setIsLoggedIn(false);
+                    setData([]);
+                }
+            })
+            .catch(err => {
+                console.error("Błąd sprawdzania sesji:", err);
+            });
     }, []);
+
 
     return (
         <div className='mt-4'>
@@ -77,9 +96,9 @@ export default function Home() {
                     :
                     <div className="d-flex align-items-center justify-content-center mt-5 flex-column">
                         <div className="home-page">
-                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdej nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu z gemini. </h3>
+                            <h3>Aplikacja "Pamiętnik + Coach AI" pozwala na dodawanie nowych wpisów ich edycję oraz usuwanie. Dodana data pozwala (przy każdym nowo dodanym wpisie) na zorientowanie się kiedy dany wpis został dodany lub i czy wogóle był edytowany. W prawym dolnym rogu mamy opcję chatu gemini. </h3>
                         </div>
-                        <h3 className="mt-4">Zaloguj się lub zarejestruj się teraz</h3>
+                        <h3 className="mt-4 text-center">Zaloguj się lub zarejestruj się teraz</h3>
                         <Link to="/login" className='btn btn-primary ms-3'>Zaloguj się/Zarejestruj się</Link>
                     </div>
             }
