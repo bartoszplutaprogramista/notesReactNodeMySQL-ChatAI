@@ -4,6 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { api } from '../config/api';
 import ChatbotIcon_Note from "./ChatbotIcon_Note";
+// import ChatForm from "./ChatForm";
 
 
 
@@ -16,9 +17,7 @@ function Note({ data, fetchData }) {
   const [isClosing, setIsClosing] = useState(false);
   const chatbotNoteRef = useRef(null);
   // const chatbotNoteRefs = useRef({});
-
-
-
+  const [chatHistory, setChatHistory] = useState([]);
 
 
   const handleEdit = (note) => {
@@ -66,24 +65,24 @@ function Note({ data, fetchData }) {
   //   setActiveChatbotNoteId(prev => (prev === id ? null : id));
   // };
 
-  const toggleChatbotPanel = (id) => {
+  const toggleChatbotPanel = (note) => {
+    const id = note.idOfNote;
     if (activeChatbotNoteId === id) {
-      // Kliknięto ikonę dla aktywnej notatki → zamykamy z animacją
       setIsClosing(true);
       setTimeout(() => {
         setActiveChatbotNoteId(null);
         setIsClosing(false);
-      }, 500); // czas trwania animacji
+      }, 500);
     } else if (activeChatbotNoteId !== null) {
-      // Inna notatka jest aktywna → najpierw zamykamy starą
       setIsClosing(true);
       setTimeout(() => {
-        setActiveChatbotNoteId(id); // otwieramy nową
+        setActiveChatbotNoteId(id);
         setIsClosing(false);
+        handleAutoChat(note); // ← tu
       }, 500);
     } else {
-      // Żadna notatka nie była aktywna → otwieramy od razu
       setActiveChatbotNoteId(id);
+      handleAutoChat(note); // ← tu
     }
   };
 
@@ -100,29 +99,38 @@ function Note({ data, fetchData }) {
   }, [activeChatbotNoteId, isClosing]);
 
 
-  // useEffect(() => {
-  //   if (activeChatbotNoteId && !isClosing) {
-  //     const timeout = setTimeout(() => {
-  //       const el = document.querySelector(`[data-note-id="${activeChatbotNoteId}"]`);
-  //       if (el) {
-  //         el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  //       }
-  //     }, 50);
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [activeChatbotNoteId, isClosing]);
+  const generateBotResponse = async (history) => {
+    const updateHistory = (text, isError = false) => {
+      setChatHistory(prev => [...prev.filter(msg => msg.text !== "Myślę..."), { role: "model", text, isError }]);
+    };
 
-  // useEffect(() => {
-  //   if (activeChatbotNoteId && !isClosing) {
-  //     const timeout = setTimeout(() => {
-  //       const el = chatbotNoteRefs.current[activeChatbotNoteId];
-  //       if (el) {
-  //         el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  //       }
-  //     }, 50);
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [activeChatbotNoteId, isClosing]);
+    const formattedHistory = history.map(({ role, text }) => ({ role, parts: [{ text }] }));
+
+    try {
+      const response = await fetch(import.meta.env.VITE_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: formattedHistory })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error.message || "Coś poszło nie tak!");
+
+      const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      updateHistory(apiResponseText);
+    } catch (error) {
+      updateHistory(error.message, true);
+    }
+  };
+
+
+  const handleAutoChat = (note) => {
+    const userMessage = note.noteOfNote.trim();
+    if (!userMessage) return;
+
+    setChatHistory([{ role: "model", text: "Myślę..." }]);
+    generateBotResponse([{ role: "user", text: userMessage }]);
+  };
+
 
 
   return (
@@ -166,7 +174,12 @@ function Note({ data, fetchData }) {
                             : `D: ${new Date(item.dateOfNote).toLocaleDateString('pl-PL')}`}
                         </small>
                       </div>
-                      <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item.idOfNote)}>
+                      {/* <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item.idOfNote)}>
+                        <ChatbotIcon_Note />
+                      </button> */}
+
+                      <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item)}
+                      >
                         <ChatbotIcon_Note />
                       </button>
 
@@ -195,7 +208,32 @@ function Note({ data, fetchData }) {
                         {/* <div className="note-properties"> */}
                         {/* <p className="p-note-bold">Chatbot dla: {item.titleOfNote}</p> */}
                         <div className="scrollable-bot">
-                          <p className="p-note">Tu może być interakcja z chatbotem dla tej notatki.Tu może być interakcja z chatbotem dla tej notatki.Tu może być interakcja z chatbotem dla tej notatki</p>
+                          {/* <p className="p-note"> */}
+                          {/* <p className="p-note-bold">Zapytanie: {note.titleOfNote}</p> */}
+                          <div className="scrollable-bot">
+                            {chatHistory.map((chat, index) => (
+                              <p key={index} className={`p-note ${chat.role === "model" ? "bot" : "user"}`}>
+                                {chat.text}
+                              </p>
+                            ))}
+                          </div>
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const input = e.target.elements.chatInput.value.trim();
+                              if (!input) return;
+                              setChatHistory((prev) => [...prev, { role: "user", text: input }]);
+                              setTimeout(() => {
+                                setChatHistory((prev) => [...prev, { role: "model", text: "Myślę..." }]);
+                                generateBotResponse([...chatHistory, { role: "user", text: input }]);
+                              }, 600);
+                              e.target.reset();
+                            }}
+                            className="chat-form"
+                          >
+                            {/* <input type="text" name="chatInput" placeholder="Wiadomość..." className="message-input" required /> */}
+                            <button className="material-symbols-rounded">arrow_upward</button>
+                          </form>
                           {/* Możesz tu dodać komponent chatbotowy */}
                         </div>
                         <div className="buttons-notes">
