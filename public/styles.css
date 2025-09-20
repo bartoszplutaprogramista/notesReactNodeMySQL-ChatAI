@@ -11,6 +11,8 @@ html {
   font-family: "Cousine";
   height: 100%;
   margin: 0;
+  overflow-y: auto;
+
 }
 
 body {
@@ -21,6 +23,8 @@ body {
   background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
   padding: 0;
   margin: 0;
+  overflow-y: auto;
+
 }
 
 .my-container {
@@ -28,10 +32,145 @@ body {
   display: flex;
   flex-direction: column;
   margin: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+
 }
+
+.chatbot-note {
+  /* background-color: #f0f8ff; */
+  /* border-left: 4px solid #007bff; */
+  /* position: absolute;
+  top: 50px;
+  left: 50px; */
+  position: absolute;
+  /* position: relative; */
+  /* margin-top: 100px; */
+  top: 200px;
+  left: 0;
+  z-index: 9999;
+  background: #ccc;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px #ccc;
+  padding: 10px;
+  width: var(--note-width);
+  height: 200px;
+  margin-bottom: 10px;
+  /* animation: slideDown 2s ease-in-out forwards; */
+  /* margin: var(--note-margin); */
+
+  /* transform: translateY(200px);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease; */
+
+}
+
+/* @keyframes slideUp {
+  from {
+    top: 200px;
+    opacity: 1;
+  }
+  to {
+    top: 0px;
+    opacity: 0;
+  }
+}
+
+@keyframes slideDown {
+      from {
+        top: 0px;
+        opacity: 0;
+      }
+      to {
+        top: 200px;
+        opacity: 1;
+      }
+    } */
+
+@keyframes slideUp {
+  from {
+    /* transform: translateY(0);
+     top: 200px; */
+     transform: translateY(0);
+     /* top: 200px; */
+    opacity: 1;
+  }
+  to {
+    /* transform: translateY(220px);
+    top: 0px; */
+    transform: translateY(10px);
+    /* top: 0px; */
+    opacity: 0;
+  }
+}
+
+ @keyframes slideDown {
+  from {
+    /* transform: translateY(220px);
+    top: 0px; */
+    transform: translateY(10px);
+    /* top: 0px; */
+    opacity: 0;
+  }
+  to {
+    /* transform: translateY(0);
+    top: 200px; */
+
+    transform: translateY(0);
+    /* top: 200px; */
+    opacity: 1;
+  }
+}  
+    
+/* Kiedy aktywne */
+/* .chatbot-note.slide-down {
+  max-height: 200px; /* lub więcej, jeśli potrzeba */
+  /* opacity: 1;
+}  */
+
+/* Kiedy się chowa */
+/* .chatbot-note.slide-up {
+  max-height: 0;
+  opacity: 0;
+} */
+
+
+.chatbot-note.slide-down {
+  animation: slideDown 0.3s ease-in-out forwards;
+}
+
+.chatbot-note.slide-up {
+  animation: slideUp 0.3s ease-in-out forwards;
+}
+
+/* .chatbot-note.slide-down {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.chatbot-note.slide-up {
+  transform: translateY(-20px);
+  opacity: 0;
+} */
+
+/* .chatbot-panel {
+  width: 240px;
+  height: 240px;
+  background-color: #fff8dc;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  padding: 12px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+} */
 
 .scrollable {
   max-height: 120px;
+  overflow-y: auto;
+}
+
+.scrollable-bot {
+  max-height: 145px;
   overflow-y: auto;
 }
 
@@ -71,6 +210,9 @@ footer p {
 .outer-container {
   display: flex;
   justify-content: center;
+  /* max-height: 100vh; 
+  overflow-y: auto; */
+
 }
 
 .general-note-my {
@@ -82,6 +224,11 @@ footer p {
   margin: 0 auto;
   padding: 0;
   width: calc(round(down, 100%, var(--note-width) + 2 * var(--note-margin) + 1px));
+  /* max-height: 100vh;
+  overflow-y: auto; */
+
+
+  /* padding-bottom: 300px; */
 }
 
 .note {
@@ -92,6 +239,7 @@ footer p {
   width: var(--note-width);
   height: 200px;
   margin: var(--note-margin);
+  position: relative;
 }
 
 .header-note{
