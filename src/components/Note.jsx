@@ -4,9 +4,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { api } from '../config/api';
 import ChatbotIcon_Note from "./ChatbotIcon_Note";
-// import ChatForm from "./ChatForm";
-
-
 
 function Note({ data, fetchData }) {
 
@@ -16,7 +13,6 @@ function Note({ data, fetchData }) {
   const [activeChatbotNoteId, setActiveChatbotNoteId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
   const chatbotNoteRef = useRef(null);
-  // const chatbotNoteRefs = useRef({});
   const [chatHistory, setChatHistory] = useState([]);
 
 
@@ -61,10 +57,6 @@ function Note({ data, fetchData }) {
       });
   };
 
-  // const toggleChatbotPanel = (id) => {
-  //   setActiveChatbotNoteId(prev => (prev === id ? null : id));
-  // };
-
   const toggleChatbotPanel = (note) => {
     const id = note.idOfNote;
     if (activeChatbotNoteId === id) {
@@ -78,22 +70,21 @@ function Note({ data, fetchData }) {
       setTimeout(() => {
         setActiveChatbotNoteId(id);
         setIsClosing(false);
-        handleAutoChat(note); // ← tu
+        handleAutoChat(note);
       }, 500);
     } else {
       setActiveChatbotNoteId(id);
-      handleAutoChat(note); // ← tu
+      handleAutoChat(note);
     }
   };
 
-  // Ostatnie któe działało
   useEffect(() => {
     if (activeChatbotNoteId && !isClosing) {
       const timeout = setTimeout(() => {
         if (chatbotNoteRef.current) {
           chatbotNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
-      }, 50); // krótka pauza na render
+      }, 50);
       return () => clearTimeout(timeout);
     }
   }, [activeChatbotNoteId, isClosing]);
@@ -160,7 +151,6 @@ function Note({ data, fetchData }) {
                     </div>
                   </div>
                 ) : (
-                  // <div>
                   <div className="note-properties">
                     <p className="p-note-bold">{item.titleOfNote}</p>
                     <div className="scrollable">
@@ -174,10 +164,6 @@ function Note({ data, fetchData }) {
                             : `D: ${new Date(item.dateOfNote).toLocaleDateString('pl-PL')}`}
                         </small>
                       </div>
-                      {/* <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item.idOfNote)}>
-                        <ChatbotIcon_Note />
-                      </button> */}
-
                       <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item)}
                       >
                         <ChatbotIcon_Note />
@@ -189,27 +175,13 @@ function Note({ data, fetchData }) {
                       <button title="Usuń" onClick={() => handleDelete(item.idOfNote)}>
                         <DeleteIcon />
                       </button>
-                      {/* </div> */}
                     </div>
                     {activeChatbotNoteId === item.idOfNote && (
-                      // <div className="chatbot-note mt-2 border border-danger ">
-                      //ostatni div którey działał
                       <div
                         ref={chatbotNoteRef}
                         className={`chatbot-note mt-2 border border-danger ${isClosing ? 'slide-up' : 'slide-down'}`}
                       >
-                        {/* // <div */}
-                        {/* //   ref={(el) => { */}
-                        {/* //     if (el) chatbotNoteRefs.current[item.idOfNote] = el;
-                          //   }}
-                          //   className={`chatbot-note mt-2 border border-danger ${isClosing ? 'slide-up' : 'slide-down'}`}
-                          // > */}
-
-                        {/* <div className="note-properties"> */}
-                        {/* <p className="p-note-bold">Chatbot dla: {item.titleOfNote}</p> */}
                         <div className="scrollable-bot">
-                          {/* <p className="p-note"> */}
-                          {/* <p className="p-note-bold">Zapytanie: {note.titleOfNote}</p> */}
                           <div className="scrollable-bot">
                             {chatHistory.map((chat, index) => (
                               <p key={index} className={`p-note ${chat.role === "model" ? "bot" : "user"}`}>
@@ -231,20 +203,17 @@ function Note({ data, fetchData }) {
                             }}
                             className="chat-form"
                           >
-                            {/* <input type="text" name="chatInput" placeholder="Wiadomość..." className="message-input" required /> */}
                             <button className="material-symbols-rounded">arrow_upward</button>
                           </form>
-                          {/* Możesz tu dodać komponent chatbotowy */}
                         </div>
                         <div className="buttons-notes">
-                          {/* <button onClick={() => setActiveChatbotNoteId(null)} className="material-symbols-rounded">keyboard_arrow_up</button> */}
                           <button
                             onClick={() => {
                               setIsClosing(true);
                               setTimeout(() => {
                                 setActiveChatbotNoteId(null);
                                 setIsClosing(false);
-                              }, 500); // czas trwania animacji
+                              }, 500);
                             }}
                             className="material-symbols-rounded mt-1"
                           >
@@ -252,14 +221,9 @@ function Note({ data, fetchData }) {
                           </button>
 
                         </div>
-                        {/* </div> */}
                       </div>
                     )}
                   </div>
-
-
-
-                  // </div>
                 )}
               </div>
             </div>
