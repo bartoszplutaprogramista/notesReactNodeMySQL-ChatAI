@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 26 Sie 2025, 01:59
+-- Czas generowania: 02 Paź 2025, 20:12
 -- Wersja serwera: 10.4.27-MariaDB
 -- Wersja PHP: 8.2.0
 
@@ -31,7 +31,7 @@ CREATE TABLE `notes` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `title` varchar(40) NOT NULL,
-  `note` varchar(200) NOT NULL,
+  `note` varchar(400) NOT NULL,
   `date` date DEFAULT NULL,
   `editedDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -126,9 +126,9 @@ INSERT INTO `notes` (`id`, `user_id`, `title`, `note`, `date`, `editedDate`) VAL
 (383, 18, 'gfh', 'gfh', '2025-08-14', NULL),
 (384, 15, 'dv', 'dfddf', '2025-08-20', NULL),
 (392, 19, 'fggf', 'fgfggffgfg', '2025-08-21', '2025-08-22'),
-(396, 19, 'dfhdfhgfdhhdhgdhdhdfhd', 'dfhfdhghfhgfhgfhgfhghffhgfgfhgfhgfhghfgfhgfhgfhfhfhhgfhfhfghgfhcvcvdfg', '2025-08-22', '2025-08-24'),
-(401, 19, 'dsfsf', 'dsfsfdfdfsa', '2025-08-23', '2025-08-24'),
-(402, 19, 'dsfdsdf', 'sfdfsdfdf', '2025-08-23', '2025-08-24'),
+(396, 19, 'dfhdfhgfdhhdhgdhdhdfhd', 'dfhfdhghfhgfhgfhgfhghffhgfgfhgfhgfhghfgfhgfhgfhfhfhhgfhfhfghgfhcvcvdfg fdgdg fd fd fdg fd', '2025-08-22', '2025-09-20'),
+(401, 19, 'dsfsf', 'dsfsfdfdfsazsdwerwerwer w eww ew w wr ww ew  w ew w e wrwr ewr ewr rwrw w rew rew w rw ew w  ww', '2025-08-23', '2025-09-19'),
+(402, 19, 'dsfdsdf', 'sfdfsdffdf', '2025-08-23', '2025-09-18'),
 (404, 22, 'dfdfdf', 'dfdff', '2025-08-23', NULL),
 (405, 23, 'Przykładowy tekstPrzyk', 'Przykładowy tekst Przykłądowy tekstPrzykłądowy tekstPrzykłądowy tekst', '2025-08-23', NULL),
 (407, 23, 'Lorem ipsum', 'Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum', '2025-08-23', NULL),
@@ -138,8 +138,6 @@ INSERT INTO `notes` (`id`, `user_id`, `title`, `note`, `date`, `editedDate`) VAL
 (411, 23, 'sd', 'Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum', '2025-08-23', NULL),
 (412, 23, 'fgfdggf', 'ffdgfdgd', '2025-08-23', NULL),
 (413, 23, 'Lorem ipsumLorem ipsum', 'Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum', '2025-08-23', NULL),
-(414, 19, 'tekst', 'tekst', '2025-08-24', NULL),
-(415, 19, 'fdgfd', 'gfdggd', '2025-08-24', NULL),
 (419, 24, 'sdsd', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&#x27;s standard dummy text ever since the 1500s, when an unknown printer took a galley of t', '2025-08-24', NULL),
 (420, 24, 'sdcds', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&#x27;s standard dummy text ever since the 1500s, when an unknown printer took a galley of t', '2025-08-24', NULL),
 (421, 24, 'sdds', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&#x27;s standard dummy text ever since the 1500s, when an unknown printer took a galley of t', '2025-08-24', NULL),
@@ -159,8 +157,52 @@ INSERT INTO `notes` (`id`, `user_id`, `title`, `note`, `date`, `editedDate`) VAL
 (435, 31, 'Tekst Tekst', 'Tekst tekst Tekst tekst Tekst tekst Tekst tekst Tekst tekst Tekst tekst Tekst tekst Tekst tekst effesf', '2025-08-25', '2025-08-25'),
 (436, 31, 'TekstTekstTekstTekstT', 'TekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekstTekst', '2025-08-25', NULL),
 (437, 31, 'TekstTekstTekstTekstT', 'TekstTekstTekstTekstTTekstTekstTekstTekstTTekstTekstTekstTekstTTekstTekstTekstTekstT TekstTekstTekstTekstT TekstTekstTekstTekstT', '2025-08-25', NULL),
-(438, 31, 'TekstTekstTekstTekstT', 'TekstTekstTekstTekstT TekstTekstTekstTekstT TekstTekstTekstTekstT TekstTekstTekstTekstT', '2025-08-25', NULL),
-(439, 31, 'TekstTekstTekstTekstT', 'TekstTekstTekstTekstT TekstTekstTekstTekstT TekstTekstTekstTekstT\nTekstTekstTekstTekstT', '2025-08-25', NULL);
+(439, 31, 'TekstTekstTekstTekstT', 'TekstTekstTekstTekstT TekstTekstTekstTekstT TekstTekstTekstTekstT\nTekstTekstTekstTekstT', '2025-08-25', NULL),
+(440, 31, 'sdfsdfs', 'sdfsdfdfssdf', '2025-08-26', '2025-08-26'),
+(441, 31, 'xzczx', 'zxcxzcxzc', '2025-08-26', NULL),
+(442, 32, 'sfd', 'dsfd', '2025-08-26', NULL),
+(443, 19, 'rte xc', 'dfgfdcv', '2025-09-15', '2025-10-02'),
+(444, 19, 'dfgdfg', 'gd', '2025-09-15', NULL),
+(445, 19, 'sdfsdf', 'dsfsdf', '2025-09-20', NULL),
+(446, 19, 'sdfgsdf', 'dsfsdfaf', '2025-09-20', NULL),
+(447, 19, 'asf', 'asfdsff', '2025-09-20', NULL),
+(448, 19, 'saf', 'fsadf', '2025-09-20', NULL),
+(450, 19, 'sfdsdaf dsf', 'sadfsf ds', '2025-09-20', '2025-10-02'),
+(452, 19, 'sf', 'sfdfsd', '2025-09-20', NULL),
+(453, 19, 'safsdf', 'sdfsd', '2025-09-20', NULL),
+(454, 19, 'sfdsdf', 'sfdsdf', '2025-09-20', NULL),
+(455, 19, 'sdfsfd', 'fsdfaf', '2025-09-20', NULL),
+(456, 19, 'ggf', 'dfg', '2025-09-20', NULL),
+(457, 19, 'dgfdg', 'fdgdfg', '2025-09-20', NULL),
+(458, 19, 'gfdgfd', 'dgfd', '2025-09-20', NULL),
+(459, 19, 'dgfdgf ff', 'dgfdf ff', '2025-09-20', '2025-10-02'),
+(460, 19, 'dfsg', 'dfgdf', '2025-09-20', NULL),
+(461, 19, 'fdg', 'fdgfd', '2025-09-20', NULL),
+(462, 19, 'dfgfd', 'fdg', '2025-09-20', NULL),
+(464, 19, 'fg', 'Dzisiaj dowiedziałem się że muszę schudnąć jakieś porady na odchudzanie', '2025-09-20', '2025-09-20'),
+(465, 19, 'dfggfd', 'dfgxcvcxvxc', '2025-09-20', '2025-09-20'),
+(466, 19, 'Otyłość', 'Dzisiaj dowiedziałem się od lekarza, że jestem otyły imam nadciśnienie możesz coś poradzić', '2025-09-20', NULL),
+(467, 19, 'choroba pięty', 'dzisiaj byłem u lekarza ponieważ boli mnie pięta od kilkunastu dni i nie wiem jak sobie poradzić z tym bólem', '2025-09-29', NULL),
+(468, 33, 'tekst', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', '2025-09-30'),
+(469, 33, 'tekst2', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(470, 33, 'Lorem ipsumLorem ipsum', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(471, 33, 'tekst3', 'sdfgdsffgsfsfdsdsfdsfdsfdsfsdfdsfdsfsdfsdfdsfsdfdsfdsfdsdsfdsfdsfdsdsfdsfdfsfdsfds', '2025-09-30', NULL),
+(472, 33, 'tytuł', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(473, 33, 'tytuł2', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(474, 33, 'tytuł3', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(475, 34, 'tekst', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', '2025-09-30'),
+(476, 34, 'tekst', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(477, 34, 'tekst', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(478, 34, 'sdfsdfsfsdfsdfsdfdssds', 'dfhgdfgdfgfdgdfgdfdgfdgdfgdffdgddfgddfdfgfdgfdfdfdgdfgfdgdfdfgfdgfdggffdg', '2025-09-30', NULL),
+(479, 34, 'tytuł', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(480, 34, 'tytuł2', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(481, 34, 'ttytuł3', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(482, 34, 'tytuł4', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse at placerat dui. Nullam imperdiet urna vitae odio tincidunt faucibus. Proin vulputate mi quis nibh bibendum, non pulvinar ante dict', '2025-09-30', NULL),
+(483, 34, 'diagnoza', 'Dzisiaj dowiedziałem się od lekarza, że mam otyłość, podwyższony poziom cukru we krwi oraz nadciśnienie.', '2025-09-30', NULL),
+(485, 19, 'sdfsdfdsfsfsfsfdsfsfss', 'Lorem Ipsum is simply dummy text of the printing and d typesetting industry. Lorem Ipsum has been the industry&amp;amp;amp;amp;amp;amp;#x27;s standard dummy text ever since the 1500s, when an unknown ', '2025-10-02', '2025-10-02'),
+(486, 19, 'To jest notatka', 'Ta notatka ma na celu pokazanie czy wszystko jest wporządku z edycją tekstu. Zaraz zobaczymy czy wszystko jest dobrze, jak narazie jest wporządku Ta notatka ma na celu pokazanie czy wszystko jest wporządku z edycją tekstu. Zaraz zobaczymy czy wszystko jest dobrze, jak narazie jest wporządku Zaraz zobaczymy czy wszystko jest dobrze, jak narazie jest wporządku Zaraz zobaczymy czy wszystko jest dobrz', '2025-10-02', '2025-10-02'),
+(487, 19, 'sdfd', 'ds dsfdsf', '2025-10-02', NULL),
+(488, 19, 'Diagnoza', 'Dzisiaj byłem u lekarza i powiedział że mam za mało ruchu', '2025-10-02', NULL);
 
 -- --------------------------------------------------------
 
@@ -197,7 +239,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`) VALUES
 (23, 'Bartek', 'bartek_test1@o2.pl', '$2b$10$WCb.B9kQniDW1/aECb3NxeGAz7D6Szyzu9NTTbpS/5ftQarsH82sG'),
 (24, 'Bartek', 'bartek_test6@o2.pl', '$2b$10$S837N/zIA3W5yfmjWZF.c.K5pFkBzIbTwAsKjp4.MJJJUwD2efilu'),
 (25, 'Bartek', 'bartek_test11@o2.pl', '$2b$10$PqRJvPNsD.6YIQ21OBRAmuXj0YDnjuRB54boFR3Wys17pvnfyPlN6'),
-(31, 'Bartek', 'bartek_testy@o2.pl', '$2b$10$WiI93xj7saZ6/j/6VUCv/.CMktxL4XR1LrOtv/DMTDnZ0vG/3sDS6');
+(32, 'Bartek', 'bartek34@o2.pl', '$2b$10$qXnyad3MBWbiPLSWNkLL2Ol1saqULGGu4SS1KMLhRtx88qJ/U0JWe'),
+(34, 'Bartek', 'bartek_testy@o2.pl', '$2b$10$KHAXb3JEcs45fDMj6LyjXevSWPZIz6FimjL0wMGBZd1GDMhUzbKiK');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -223,13 +266,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT dla tabeli `notes`
 --
 ALTER TABLE `notes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=440;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=489;
 
 --
 -- AUTO_INCREMENT dla tabeli `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
