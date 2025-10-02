@@ -105,23 +105,22 @@ const verifyUser = (req, res, next) => {
 const validateNote = [
     body('title').trim().isLength({
         min: 1,
-        max: 100
+        max: 22
     }).escape(),
     body('content').trim().isLength({
         min: 1,
-        max: 1000
+        max: 400
     }).escape()
 ];
 
 const validateLogin = [
-    body('email').trim().isLength({
-        min: 1,
+    body('email').isEmail().normalizeEmail(),
+    body('password')
+    .isLength({
+        min: 6,
         max: 100
-    }).escape(),
-    body('password').trim().isLength({
-        min: 1,
-        max: 1000
-    }).escape()
+    })
+    .withMessage("Password must be at least 6 characters long")
 ];
 
 const validateRegistration = [
@@ -129,39 +128,28 @@ const validateRegistration = [
         min: 1,
         max: 100
     }).escape(),
-    body('email').trim().isLength({
-        min: 1,
+    body('email').isEmail().normalizeEmail(),
+    body('password')
+    .isLength({
+        min: 6,
         max: 100
-    }).escape(),
-    body('password').trim().isLength({
-        min: 1,
-        max: 1000
-    }).escape()
+    })
+    .withMessage("Password must be at least 6 characters long")
 ];
 
 const validateEdit = [
-    body('id').trim().isLength({
-        min: 1,
-        max: 100
-    }).escape(),
+    body('id').isInt().toInt(),
     body('title').trim().isLength({
         min: 1,
-        max: 100
+        max: 22
     }).escape(),
     body('content').trim().isLength({
         min: 1,
-        max: 1000
+        max: 400
     }).escape()
 ];
 
 app.get('/', verifyUser, (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            Message: "Invalid input data",
-            errors: errors.array()
-        });
-    }
     return res.json({
         Status: "Success",
         name: req.name,
@@ -337,13 +325,6 @@ app.post('/deletenote', async (req, res) => {
 
 
 app.get('/logout', (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            Message: "Invalid input data",
-            errors: errors.array()
-        });
-    }
     res.clearCookie('token');
     req.session.destroy();
     return sendSuccess(res, {
@@ -352,14 +333,6 @@ app.get('/logout', (req, res) => {
 })
 
 app.get('/getAllNotes', async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            Message: "Invalid input data",
-            errors: errors.array()
-        });
-    }
-
     if (!req.session.user_id) {
         return res.status(401).json({
             Message: "User is not logged in"
@@ -440,7 +413,11 @@ app.post('/editnote', validateEdit, async (req, res) => {
     }
 });
 
-app.post("/check-email", async (req, res) => {
+const validateCheckEmail = [
+    body('email').isEmail().normalizeEmail()
+];
+
+app.post("/check-email", validateCheckEmail, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
