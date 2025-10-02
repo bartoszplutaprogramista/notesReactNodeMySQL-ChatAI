@@ -11,6 +11,8 @@ html {
   font-family: "Cousine";
   height: 100%;
   margin: 0;
+  overflow-y: auto;
+
 }
 
 body {
@@ -30,8 +32,58 @@ body {
   margin: 0;
 }
 
+.chatbot-note {
+  position: absolute;
+  top: 200px;
+  left: 0;
+  z-index: 9999;
+  background: #ccc;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px #ccc;
+  padding: 10px;
+  width: var(--note-width);
+  height: 200px;
+  margin-bottom: 50px;
+}
+
+@keyframes slideUp {
+  from {
+     transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+ @keyframes slideDown {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}  
+
+.chatbot-note.slide-down {
+  animation: slideDown 0.3s ease-in-out forwards;
+}
+
+.chatbot-note.slide-up {
+  animation: slideUp 0.3s ease-in-out forwards;
+}
+
 .scrollable {
   max-height: 120px;
+  overflow-y: auto;
+}
+
+.scrollable-bot {
+  min-height: 145px;
+  max-height: 145px;
   overflow-y: auto;
 }
 
@@ -92,6 +144,7 @@ footer p {
   width: var(--note-width);
   height: 200px;
   margin: var(--note-margin);
+  position: relative;
 }
 
 .header-note{

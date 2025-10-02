@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { api } from '../config/api';
-
-
+import ChatbotIcon_Note from "./ChatbotIcon_Note";
 
 function Note({ data, fetchData }) {
 
   const [editNote, setEditNote] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [activeChatbotNoteId, setActiveChatbotNoteId] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const chatbotNoteRef = useRef(null);
+  const [chatHistory, setChatHistory] = useState([]);
+
 
   const handleEdit = (note) => {
     setEditNote(note);
@@ -53,6 +57,73 @@ function Note({ data, fetchData }) {
       });
   };
 
+  const toggleChatbotPanel = (note) => {
+    const id = note.idOfNote;
+    if (activeChatbotNoteId === id) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setActiveChatbotNoteId(null);
+        setIsClosing(false);
+      }, 500);
+    } else if (activeChatbotNoteId !== null) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setActiveChatbotNoteId(id);
+        setIsClosing(false);
+        handleAutoChat(note);
+      }, 500);
+    } else {
+      setActiveChatbotNoteId(id);
+      handleAutoChat(note);
+    }
+  };
+
+  useEffect(() => {
+    if (activeChatbotNoteId && !isClosing) {
+      const timeout = setTimeout(() => {
+        if (chatbotNoteRef.current) {
+          chatbotNoteRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [activeChatbotNoteId, isClosing]);
+
+
+  const generateBotResponse = async (history) => {
+    const updateHistory = (text, isError = false) => {
+      setChatHistory(prev => [...prev.filter(msg => msg.text !== "Myślę..."), { role: "model", text, isError }]);
+    };
+
+    const formattedHistory = history.map(({ role, text }) => ({ role, parts: [{ text }] }));
+
+    try {
+      const response = await fetch(import.meta.env.VITE_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: formattedHistory })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error.message || "Coś poszło nie tak!");
+
+      const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      updateHistory(apiResponseText);
+    } catch (error) {
+      updateHistory(error.message, true);
+    }
+  };
+
+
+  const handleAutoChat = (note) => {
+    const userMessage = note.noteOfNote.trim();
+    if (!userMessage) return;
+
+    setChatHistory([{ role: "model", text: "Myślę..." }]);
+    generateBotResponse([{ role: "user", text: userMessage }]);
+  };
+
+
+
   return (
     <div className="outer-container">
       <div className="general-note-my">
@@ -86,13 +157,18 @@ function Note({ data, fetchData }) {
                       <p className="p-note">{item.noteOfNote}</p>
                     </div>
                     <div className="buttons-notes">
-                      <div >
+                      <div>
                         <small className="me-2">
                           {item.editedDateOfNote
-                            ? `Edyt.: ${new Date(item.editedDateOfNote).toLocaleDateString('pl-PL')}`
-                            : `Dodano: ${new Date(item.dateOfNote).toLocaleDateString('pl-PL')}`}
+                            ? `E.: ${new Date(item.editedDateOfNote).toLocaleDateString('pl-PL')}`
+                            : `D: ${new Date(item.dateOfNote).toLocaleDateString('pl-PL')}`}
                         </small>
                       </div>
+                      <button className="me-2" title="ChatBot" onClick={() => toggleChatbotPanel(item)}
+                      >
+                        <ChatbotIcon_Note />
+                      </button>
+
                       <button className="me-2" title="Edytuj" onClick={() => handleEdit(item)}>
                         <EditIcon />
                       </button>
@@ -100,7 +176,53 @@ function Note({ data, fetchData }) {
                         <DeleteIcon />
                       </button>
                     </div>
+                    {activeChatbotNoteId === item.idOfNote && (
+                      <div
+                        ref={chatbotNoteRef}
+                        className={`chatbot-note mt-2 border border-danger ${isClosing ? 'slide-up' : 'slide-down'}`}
+                      >
+                        <div className="scrollable-bot">
+                          <div className="scrollable-bot">
+                            {chatHistory.map((chat, index) => (
+                              <p key={index} className={`p-note ${chat.role === "model" ? "bot" : "user"}`}>
+                                {chat.text}
+                              </p>
+                            ))}
+                          </div>
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const input = e.target.elements.chatInput.value.trim();
+                              if (!input) return;
+                              setChatHistory((prev) => [...prev, { role: "user", text: input }]);
+                              setTimeout(() => {
+                                setChatHistory((prev) => [...prev, { role: "model", text: "Myślę..." }]);
+                                generateBotResponse([...chatHistory, { role: "user", text: input }]);
+                              }, 600);
+                              e.target.reset();
+                            }}
+                            className="chat-form"
+                          >
+                            <button className="material-symbols-rounded">arrow_upward</button>
+                          </form>
+                        </div>
+                        <div className="buttons-notes">
+                          <button
+                            onClick={() => {
+                              setIsClosing(true);
+                              setTimeout(() => {
+                                setActiveChatbotNoteId(null);
+                                setIsClosing(false);
+                              }, 500);
+                            }}
+                            className="material-symbols-rounded mt-1"
+                          >
+                            keyboard_arrow_up
+                          </button>
 
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -110,7 +232,7 @@ function Note({ data, fetchData }) {
           <p>Nie ma żadnych notatek</p>
         )}
       </div>
-    </div>
+    </div >
   );
 }
 
